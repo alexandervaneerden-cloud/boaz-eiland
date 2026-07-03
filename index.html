@@ -49,6 +49,11 @@
   .tegel .kop .em{font-size:26px;}
   .tegel .uitleg{font-size:12px; color:#8a8f96; margin-top:3px; min-height:28px;}
   .sterren{margin-top:6px; font-size:16px; letter-spacing:2px; color:var(--goud);}
+  .tegel.gered{background:#EAF7EF; border:2px solid var(--groen);}
+  .tegel.nietgered{opacity:.7;}
+  .tegel .kop .em.dim{filter:grayscale(1); opacity:.45;}
+  .badge-gered{margin-left:auto; background:var(--groen); color:#fff; font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px;}
+  .verzameling h2 .telling{color:var(--groen);}
 
   /* ---- SPEL ---- */
   .spelkop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
@@ -126,7 +131,7 @@
   </div>
 
   <div class="verzameling">
-    <h2>Jouw dieren</h2>
+    <h2 id="verzamelTitel">Jouw dieren</h2>
     <div class="grid" id="verzamelGrid"></div>
   </div>
 </div>
@@ -429,14 +434,23 @@ function tekenDieren(){
 function tekenVerzameling(){
   const g = document.getElementById("verzamelGrid");
   g.innerHTML = "";
+  const gered = RULES.filter(r=> niveauVan(r.id)>0).length;
+  document.getElementById("verzamelTitel").innerHTML =
+    `Jouw dieren — <span class="telling">${gered} van ${RULES.length} gered</span> 🏝️`;
   RULES.forEach(r=>{
     const n = niveauVan(r.id);
-    const sterren = "★".repeat(n) + "☆".repeat(5-n);
     const div = document.createElement("div");
-    div.className = "tegel";
-    div.innerHTML = `<div class="kop"><span class="em">${r.emoji}</span> ${r.naam}</div>
-      <div class="uitleg">${r.uitleg}</div>
-      <div class="sterren">${sterren}</div>`;
+    if(n>0){
+      div.className = "tegel gered";
+      div.innerHTML = `<div class="kop"><span class="em">${r.emoji}</span> ${r.naam} <span class="badge-gered">Gered!</span></div>
+        <div class="uitleg">${r.uitleg}</div>
+        <div class="sterren">${"★".repeat(n)}${"☆".repeat(5-n)}</div>`;
+    } else {
+      div.className = "tegel nietgered";
+      div.innerHTML = `<div class="kop"><span class="em dim">${r.emoji}</span> ${r.naam}</div>
+        <div class="uitleg">Nog te redden — oefen de ${r.naam.toLowerCase()}-woorden</div>
+        <div class="sterren">☆☆☆☆☆</div>`;
+    }
     g.appendChild(div);
   });
 }

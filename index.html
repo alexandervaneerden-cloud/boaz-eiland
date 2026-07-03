@@ -194,6 +194,7 @@
     <div style="text-align:center; margin-top:12px;">
       <button style="background:none; border:none; color:#c0392b; font-size:13px; text-decoration:underline; cursor:pointer" id="wisVoortgang">Alle voortgang wissen</button>
     </div>
+    <div class="statusregel" id="herkInfo"></div>
     <div class="statusregel" id="leerInfo"></div>
     <div class="statusregel" id="stemStatus"></div>
   </div>
@@ -263,7 +264,15 @@ const WOORDEN = [
 const SLEUTEL = "boaz-eiland-v1";
 let state = laadState();
 function standaardState(){
-  return { munten:0, doelNaam:"IJsje", doelBedrag:500, goed:{}, fout:{}, wachtrij:[], samples:{} };
+  return { munten:0, doelNaam:"IJsje", doelBedrag:500, goed:{}, fout:{}, wachtrij:[], samples:{}, herkGoed:0, herkTot:0, herkRecent:[] };
+}
+/* Houdt bij hoe vaak de app een goed geschreven letter meteen juist herkende. */
+function telHerkenning(goed, totaal){
+  state.herkGoed = (state.herkGoed||0) + goed;
+  state.herkTot  = (state.herkTot||0) + totaal;
+  state.herkRecent = state.herkRecent || [];
+  for(let i=0;i<totaal;i++) state.herkRecent.push(i<goed ? 1 : 0);
+  if(state.herkRecent.length > 40) state.herkRecent = state.herkRecent.slice(-40);
 }
 function laadState(){
   try{ const s = JSON.parse(localStorage.getItem(SLEUTEL)); return Object.assign(standaardState(), s||{}); }
@@ -516,7 +525,7 @@ function nakijken(){
   });
   const uit=document.getElementById("uitslag");
   if(geschreven < item.w.length){ uit.textContent="Schrijf eerst alle letters ✍️"; uit.className="uitslag bijna"; return; }
-  if(twijfel.length===0){ leerAlles(vakken); goedGedaan(10); }   // helemaal goed → van elke letter leren
+  if(twijfel.length===0){ telHerkenning(vakken.length, vakken.length); leerAlles(vakken); goedGedaan(10); }   // helemaal goed → van elke letter leren
   else{
     uit.textContent="Bijna! Kijk naar de gekleurde letters."; uit.className="uitslag bijna";
     document.getElementById("hint").style.display="block";
@@ -528,7 +537,7 @@ function toonFix(vakken, twijfel){
   kn.innerHTML=""; fix.style.display="block";
   const ja=document.createElement("button"); ja.className="ja"; ja.textContent="Boaz had 't tóch goed ✓";
   const nee=document.createElement("button"); nee.className="nee"; nee.textContent="Echt fout ✎";
-  ja.onclick=()=>{ leerAlles(vakken); twijfel.forEach(v=>{ v.className="vak goed"; v._badge.textContent="✓"; }); fix.style.display="none"; goedGedaan(6); }; // juist deze letters zijn goud om van te leren
+  ja.onclick=()=>{ telHerkenning(vakken.length - twijfel.length, vakken.length); leerAlles(vakken); twijfel.forEach(v=>{ v.className="vak goed"; v._badge.textContent="✓"; }); fix.style.display="none"; goedGedaan(6); }; // juist deze letters zijn goud om van te leren
   nee.onclick=()=>{ fix.style.display="none"; foutGedaan(); };
   kn.append(ja,nee);
 }
@@ -587,6 +596,12 @@ function openOuder(){
     tr.innerHTML = `<td>${r.emoji} ${r.naam}</td><td>${r.uitleg}</td><td>${state.fout[r.id]||0}</td>`;
     tb.appendChild(tr);
   });
+  const totaalPct = state.herkTot ? Math.round(state.herkGoed/state.herkTot*100) : null;
+  const rec = state.herkRecent||[];
+  const recPct = rec.length ? Math.round(rec.reduce((a,b)=>a+b,0)/rec.length*100) : null;
+  document.getElementById("herkInfo").textContent = totaalPct===null
+    ? "🎯 Herkenning: nog geen letters gemeten — speel een rondje."
+    : "🎯 Herkenning: totaal " + totaalPct + "% (" + state.herkTot + " letters) · laatste " + rec.length + ": " + recPct + "%";
   document.getElementById("leerInfo").textContent = "✍️ Handschrift geleerd: " + aantalSamples() + " voorbeelden — hoe meer Boaz speelt, hoe beter de herkenning wordt.";
   toonStemStatus();
   document.getElementById("ouder").classList.add("actief");

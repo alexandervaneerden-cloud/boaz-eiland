@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Boaz' Eiland</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#46B0D8">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --zand:#F6E7B8; --zand-donker:#E9D189; --zee:#46B0D8; --zee-licht:#BFE8F5;
+    --palm:#2FA05A; --palm-donker:#1F7A44; --oranje:#FF7A3C; --blauw:#185FA5;
+    --groen:#1D9E75; --rood:#E24B4A; --ink:#173a5e; --goud:#E5A400;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;
+    background:var(--zee-licht); color:var(--ink); min-height:100vh; overscroll-behavior:none;
+  }
+  .scherm{display:none; padding:14px; max-width:1000px; margin:0 auto;}
+  .scherm.actief{display:block;}
+  .knop{border:none; border-radius:999px; padding:15px 26px; font-size:18px; font-weight:800; cursor:pointer;}
+  .knop.primair{background:var(--oranje); color:#fff;}
+  .knop.groen{background:var(--groen); color:#fff;}
+  .knop.grijs{background:#fff; color:var(--blauw); box-shadow:0 2px 0 rgba(0,0,0,.06);}
+  .knop:active{transform:scale(.97);}
+
+  /* ---- HOME ---- */
+  .hud{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
+  .munt{background:#fff; border-radius:999px; padding:8px 16px; font-weight:800; color:var(--blauw); font-size:18px; box-shadow:0 2px 0 rgba(0,0,0,.06);}
+  .doel{background:#fff; border-radius:16px; padding:8px 14px; box-shadow:0 2px 0 rgba(0,0,0,.06); flex:1; max-width:320px;}
+  .doel .rij{display:flex; justify-content:space-between; font-size:13px; font-weight:800; color:#993C1D;}
+  .doel .balk{height:9px; border-radius:999px; background:#F0D9C9; margin-top:5px; overflow:hidden;}
+  .doel .vul{height:100%; background:#D85A30;}
+  .gear{background:#fff; border:none; border-radius:50%; width:44px; height:44px; font-size:20px; box-shadow:0 2px 0 rgba(0,0,0,.06); cursor:pointer;}
+  .eiland{position:relative; border-radius:22px; overflow:hidden; box-shadow:0 4px 0 rgba(0,0,0,.06);}
+  .titel{position:absolute; top:12px; left:0; right:0; text-align:center; font-size:24px; font-weight:800; color:var(--palm-donker); text-shadow:0 1px 0 #fff;}
+  .speelknop{position:absolute; bottom:16px; left:0; right:0; display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .speelknop .knop{font-size:22px; padding:16px 40px;}
+  .dieren-op-eiland span{position:absolute; transform:translate(-50%,-50%);}
+
+  .verzameling{margin-top:16px;}
+  .verzameling h2{font-size:18px; color:var(--palm-donker); margin:0 0 10px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
+  .tegel{background:#fff; border-radius:14px; padding:12px; box-shadow:0 2px 0 rgba(0,0,0,.05);}
+  .tegel .kop{display:flex; align-items:center; gap:8px; font-weight:800;}
+  .tegel .kop .em{font-size:26px;}
+  .tegel .uitleg{font-size:12px; color:#8a8f96; margin-top:3px; min-height:28px;}
+  .sterren{margin-top:6px; font-size:16px; letter-spacing:2px; color:var(--goud);}
+
+  /* ---- SPEL ---- */
+  .spelkop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .voortgang{font-weight:800; color:var(--blauw);}
+  .kaart{background:#fff; border-radius:20px; padding:16px 18px; box-shadow:0 3px 0 rgba(0,0,0,.06); margin-bottom:14px;}
+  .woordrij{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .luister{background:var(--groen); color:#fff; border:none; border-radius:999px; padding:14px 22px; font-size:18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; cursor:pointer;}
+  .luister:active{transform:scale(.97);}
+  .emoji{font-size:44px; line-height:1;}
+  .zin{font-size:18px; color:#5b6470;}
+  .zin b{color:var(--palm-donker);}
+  .hint{margin-top:12px; background:#EAF3DE; border-radius:14px; padding:10px 14px; font-size:15px; color:#27500A; line-height:1.5; display:none;}
+  .doelwoord{text-align:center; font-size:26px; font-weight:800; letter-spacing:6px; color:var(--zand-donker); min-height:16px; margin-top:6px;}
+
+  .vakjes{display:flex; gap:8px; flex-wrap:nowrap; justify-content:center; width:100%; margin:0 auto 14px;}
+  .vak{background:#fff; border:3px dashed var(--zand-donker); border-radius:18px; flex:1 1 0; min-width:0; max-width:150px; aspect-ratio:4/5; position:relative; touch-action:none;}
+  .vak.goed{border-style:solid; border-color:var(--groen);}
+  .vak.fout{border-style:solid; border-color:var(--rood);}
+  .vak canvas{position:absolute; inset:0; width:100%; height:100%; border-radius:15px;}
+  .vak .lijn{position:absolute; left:8%; right:8%; bottom:26%; border-bottom:2px dotted #d9c58e;}
+  .vak .badge{position:absolute; top:-12px; right:-8px; width:32px; height:32px; border-radius:50%; display:none; align-items:center; justify-content:center; color:#fff; font-size:19px; font-weight:800;}
+  .vak.goed .badge{display:flex; background:var(--groen);}
+  .vak.fout .badge{display:flex; background:var(--rood);}
+  .vak .las{position:absolute; bottom:4px; left:0; right:0; text-align:center; font-size:12px; color:#98a1ab; display:none;}
+  .vak.fout .las{display:block;}
+  .wisje{position:absolute; bottom:6px; right:8px; background:#f0f0f0; border:none; border-radius:8px; font-size:12px; padding:4px 8px; color:#888; cursor:pointer;}
+  .knoppen{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .uitslag{text-align:center; font-size:22px; font-weight:800; min-height:30px; margin-top:12px;}
+  .uitslag.goed{color:var(--groen);} .uitslag.bijna{color:#BA7517;}
+  .fix{background:#FFF3E0; border-radius:14px; padding:12px 14px; display:none; font-size:15px; color:#8a5a25; text-align:center; margin-top:10px;}
+  .fix button{border:none; border-radius:999px; padding:9px 15px; font-weight:800; margin:6px 4px 0; cursor:pointer;}
+  .ja{background:var(--groen); color:#fff;} .nee{background:#e0e0e0; color:#555;}
+
+  /* ---- KLAAR ---- */
+  .klaar-box{text-align:center; padding:30px 16px;}
+  .klaar-box .groot{font-size:30px; font-weight:800; color:var(--palm-donker);}
+  .klaar-box .munt-groot{font-size:40px; font-weight:800; color:var(--goud); margin:14px 0;}
+  .nieuw{background:#fff; border-radius:16px; padding:14px; margin:14px auto; max-width:420px; box-shadow:0 2px 0 rgba(0,0,0,.06);}
+  .nieuw .regel{display:flex; align-items:center; gap:10px; justify-content:center; font-size:17px; margin:6px 0;}
+
+  /* ---- OUDER ---- */
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index:10;}
+  .overlay.actief{display:flex;}
+  .paneel{background:#fff; border-radius:20px; padding:20px; max-width:460px; width:100%; max-height:90vh; overflow:auto;}
+  .paneel h2{margin:0 0 12px; color:var(--blauw);}
+  .paneel label{display:block; font-weight:800; font-size:14px; margin:12px 0 4px;}
+  .paneel input{width:100%; padding:12px; border:2px solid #e3e6ea; border-radius:12px; font-size:16px;}
+  .fouttabel{width:100%; border-collapse:collapse; margin-top:8px; font-size:14px;}
+  .fouttabel td{padding:6px 4px; border-bottom:1px solid #eee;}
+  .fouttabel td:last-child{text-align:right; font-weight:800;}
+  .statusregel{font-size:12px; color:#98a1ab; margin-top:14px; text-align:center;}
+</style>
+</head>
+<body>
+
+<!-- ========== HOME ========== -->
+<div class="scherm actief" id="home">
+  <div class="hud">
+    <div class="munt">🪙 <span id="muntHome">0</span></div>
+    <div class="doel" id="doelBlok">
+      <div class="rij"><span id="doelNaam">🎁 Doel</span><span id="doelCijfers">0 / 500</span></div>
+      <div class="balk"><div class="vul" id="doelVul" style="width:0%"></div></div>
+    </div>
+    <button class="gear" id="gear" aria-label="Instellingen voor ouders">⚙️</button>
+  </div>
+
+  <div class="eiland">
+    <div class="titel">Boaz' Eiland 🌴</div>
+    <svg viewBox="0 0 1000 340" width="100%" style="display:block" id="eilandSvg" aria-hidden="true"></svg>
+    <div class="dieren-op-eiland" id="dierenOpEiland"></div>
+    <div class="speelknop">
+      <button class="knop primair" id="speel">▶ Speel!</button>
+      <span style="font-family:inherit; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.4); font-size:15px">Verdien munten &amp; red de dieren</span>
+    </div>
+  </div>
+
+  <div class="verzameling">
+    <h2>Jouw dieren</h2>
+    <div class="grid" id="verzamelGrid"></div>
+  </div>
+</div>
+
+<!-- ========== SPEL ========== -->
+<div class="scherm" id="spel">
+  <div class="spelkop">
+    <button class="knop grijs" id="stop" style="padding:10px 18px; font-size:15px">← Stop</button>
+    <div class="voortgang" id="voortgang">Woord 1 / 5</div>
+    <div class="munt">🪙 <span id="muntSpel">0</span></div>
+  </div>
+
+  <div class="kaart">
+    <div class="woordrij">
+      <button class="luister" id="luister">🔊 Luister</button>
+      <div class="emoji" id="emoji"></div>
+      <div class="zin" id="zin"></div>
+      <button class="knop grijs" id="toon" style="padding:10px 16px; font-size:15px;">👁 Toon</button>
+    </div>
+    <div class="doelwoord" id="doelwoord"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="vakjes" id="vakjes"></div>
+
+  <div class="knoppen">
+    <button class="knop grijs" id="wisAlles">✎ Opnieuw</button>
+    <button class="knop primair" id="nakijken">✓ Nakijken</button>
+    <button class="knop groen" id="volgende" style="display:none">Volgende →</button>
+  </div>
+
+  <div class="uitslag" id="uitslag"></div>
+  <div class="fix" id="fix">
+    Twijfel — heeft Boaz het tóch goed geschreven?
+    <div id="fixKnoppen"></div>
+  </div>
+</div>
+
+<!-- ========== KLAAR ========== -->
+<div class="scherm" id="klaar">
+  <div class="klaar-box">
+    <div class="groot">Rondje klaar! 🎉</div>
+    <div class="munt-groot">🪙 +<span id="rondeMunten">0</span></div>
+    <div class="nieuw" id="nieuwBlok"></div>
+    <button class="knop primair" id="terug">🌴 Terug naar het eiland</button>
+  </div>
+</div>
+
+<!-- ========== OUDER ========== -->
+<div class="overlay" id="ouder">
+  <div class="paneel">
+    <h2>Voor de ouders 👨‍👩‍👦</h2>
+    <label for="inNaam">Naam van het spaardoel</label>
+    <input id="inNaam" type="text" placeholder="Bijv. een ijsje">
+    <label for="inBedrag">Aantal munten voor het doel</label>
+    <input id="inBedrag" type="number" min="10" step="10" placeholder="500">
+
+    <label>Fouten per spellingregel</label>
+    <table class="fouttabel" id="fouttabel"></table>
+
+    <div style="display:flex; gap:10px; margin-top:18px;">
+      <button class="knop groen" id="opslaan" style="flex:1">Opslaan</button>
+      <button class="knop grijs" id="sluit" style="flex:1">Sluiten</button>
+    </div>
+    <div style="text-align:center; margin-top:12px;">
+      <button style="background:none; border:none; color:#c0392b; font-size:13px; text-decoration:underline; cursor:pointer" id="wisVoortgang">Alle voortgang wissen</button>
+    </div>
+    <div class="statusregel" id="leerInfo"></div>
+    <div class="statusregel" id="stemStatus"></div>
+  </div>
+</div>
+
+<script>
+/* =================== SPELLINGREGELS (= dieren) =================== */
+const RULES = [
+  {id:"kikker",    naam:"Kikker",    emoji:"🐸", uitleg:"korte klank → dubbele letter",        zwaar:true},
+  {id:"haai",      naam:"Haai",      emoji:"🦈", uitleg:"aai · ooi · oei",                     zwaar:true},
+  {id:"krekel",    naam:"Krekel",    emoji:"🦗", uitleg:"lange klank, open lettergreep → één letter", zwaar:true},
+  {id:"geit",      naam:"Geit",      emoji:"🐐", uitleg:"ei of ij"},
+  {id:"beer",      naam:"Beer",      emoji:"🐻", uitleg:"eer · oor · eur"},
+  {id:"pauw",      naam:"Pauw",      emoji:"🦚", uitleg:"au of ou"},
+  {id:"stinkdier", naam:"Stinkdier", emoji:"🦨", uitleg:"woorden met nk"},
+];
+const RULE = {}; RULES.forEach(r => RULE[r.id] = r);
+/* posities van de dieren op het eiland (in % van breedte/hoogte) */
+const PLEK = {kikker:[24,74], haai:[52,88], krekel:[40,66], geit:[68,72], beer:[80,80], pauw:[14,80], stinkdier:[60,70]};
+
+/* =================== WOORDEN =================== */
+const WOORDEN = [
+  {w:"poppen", e:"🧸", r:"kikker", z:"De <b>…</b> staan op de plank."},
+  {w:"ballen", e:"⚽", r:"kikker", z:"We spelen met twee <b>…</b>."},
+  {w:"kippen", e:"🐔", r:"kikker", z:"De <b>…</b> lopen in de tuin."},
+  {w:"mussen", e:"🐦", r:"kikker", z:"Er zitten <b>…</b> in de heg."},
+  {w:"bakker", e:"🍞", r:"kikker", z:"Het brood komt van de <b>…</b>."},
+
+  {w:"haai",   e:"🦈", r:"haai",   z:"De <b>…</b> zwemt in de zee."},
+  {w:"maai",   e:"🌾", r:"haai",   z:"Ik <b>…</b> het gras."},
+  {w:"mooi",   e:"✨", r:"haai",   z:"Het eiland is heel <b>…</b>."},
+  {w:"kooi",   e:"🐦", r:"haai",   z:"De vogel zit in een <b>…</b>."},
+  {w:"gooi",   e:"🥎", r:"haai",   z:"Ik <b>…</b> de bal."},
+
+  {w:"bomen",  e:"🌳", r:"krekel", z:"Er staan hoge <b>…</b> op het strand."},
+  {w:"beren",  e:"🐻", r:"krekel", z:"Twee <b>…</b> spelen in het zand."},
+  {w:"zwanen", e:"🦢", r:"krekel", z:"De witte <b>…</b> op het water."},
+  {w:"poten",  e:"🐾", r:"krekel", z:"De hond heeft vier <b>…</b>."},
+  {w:"muren",  e:"🧱", r:"krekel", z:"De <b>…</b> zijn van steen."},
+
+  {w:"trein",  e:"🚂", r:"geit",   z:"De <b>…</b> rijdt hard."},
+  {w:"ijs",    e:"🍦", r:"geit",   z:"Ik eet een lekker <b>…</b>."},
+  {w:"bij",    e:"🐝", r:"geit",   z:"De <b>…</b> maakt honing."},
+  {w:"ei",     e:"🥚", r:"geit",   z:"De kip legt een <b>…</b>."},
+  {w:"reis",   e:"🧳", r:"geit",   z:"We gaan op <b>…</b>."},
+
+  {w:"peer",   e:"🍐", r:"beer",   z:"Ik eet een sappige <b>…</b>."},
+  {w:"deur",   e:"🚪", r:"beer",   z:"Doe de <b>…</b> dicht."},
+  {w:"oor",    e:"👂", r:"beer",   z:"Ik hoor met mijn <b>…</b>."},
+  {w:"kleur",  e:"🎨", r:"beer",   z:"Blauw is een mooie <b>…</b>."},
+  {w:"meer",   e:"🌊", r:"beer",   z:"We zwemmen in het <b>…</b>."},
+
+  {w:"blauw",  e:"🟦", r:"pauw",   z:"De lucht is <b>…</b>."},
+  {w:"goud",   e:"🥇", r:"pauw",   z:"De schat is van <b>…</b>."},
+  {w:"hout",   e:"🪵", r:"pauw",   z:"De hut is van <b>…</b>."},
+  {w:"koud",   e:"🥶", r:"pauw",   z:"In de winter is het <b>…</b>."},
+  {w:"pauw",   e:"🦚", r:"pauw",   z:"De <b>…</b> heeft mooie veren."},
+
+  {w:"bank",   e:"🛋️", r:"stinkdier", z:"Ik zit op de <b>…</b>."},
+  {w:"pink",   e:"🤙", r:"stinkdier", z:"Mijn kleinste vinger is de <b>…</b>."},
+  {w:"drinken",e:"🥤", r:"stinkdier", z:"Ik wil iets <b>…</b>."},
+  {w:"dank",   e:"🙏", r:"stinkdier", z:"<b>…</b> je wel!"},
+  {w:"plank",  e:"🪟", r:"stinkdier", z:"De boeken staan op de <b>…</b>."},
+];
+
+/* =================== STATE (opslaan) =================== */
+const SLEUTEL = "boaz-eiland-v1";
+let state = laadState();
+function standaardState(){
+  return { munten:0, doelNaam:"IJsje", doelBedrag:500, goed:{}, fout:{}, wachtrij:[], samples:{} };
+}
+function laadState(){
+  try{ const s = JSON.parse(localStorage.getItem(SLEUTEL)); return Object.assign(standaardState(), s||{}); }
+  catch(e){ return standaardState(); }
+}
+function bewaar(){ try{ localStorage.setItem(SLEUTEL, JSON.stringify(state)); }catch(e){} }
+function niveauVan(id){ const g = state.goed[id]||0; return g<=0 ? 0 : Math.min(5, Math.ceil(g/2)); }
+
+/* =================== STEM (voorlezen) =================== */
+let stemmen = [];
+function laadStemmen(){ try{ stemmen = window.speechSynthesis ? speechSynthesis.getVoices() : []; }catch(e){ stemmen=[]; } toonStemStatus(); }
+function kiesStem(){
+  const nl = stemmen.filter(s => s.lang && s.lang.toLowerCase().startsWith("nl"));
+  if(!nl.length) return null;
+  return nl.find(s => /google/i.test(s.name)) || nl.find(s => s.lang.toLowerCase()==="nl-nl") || nl[0];
+}
+function toonStemStatus(){
+  const el = document.getElementById("stemStatus"); if(!el) return;
+  if(!window.speechSynthesis){ el.textContent="⚠️ Geen voorleesfunctie in deze browser."; return; }
+  const stem = kiesStem();
+  el.textContent = stem ? ("🔊 Stem: "+stem.name+" ("+stem.lang+")") : "⚠️ Nog geen Nederlandse stem gevonden.";
+}
+if(window.speechSynthesis){ laadStemmen(); speechSynthesis.onvoiceschanged = laadStemmen; setTimeout(laadStemmen, 800); }
+let spraakOntgrendeld = false;
+function ontgrendelSpraak(){
+  if(spraakOntgrendeld || !window.speechSynthesis) return; spraakOntgrendeld = true;
+  try{ const u = new SpeechSynthesisUtterance(" "); u.volume=0; speechSynthesis.speak(u); }catch(e){}
+  laadStemmen();
+}
+document.addEventListener("pointerdown", ontgrendelSpraak, {once:true});
+function spreek(tekst){
+  if(!window.speechSynthesis){ toonDoelwoord(); return; }
+  try{
+    speechSynthesis.cancel();
+    if(!stemmen.length) laadStemmen();
+    const u = new SpeechSynthesisUtterance(tekst);
+    u.lang="nl-NL"; u.rate=.6; u.pitch=1;
+    const stem = kiesStem(); if(stem) u.voice = stem;
+    u.onerror = ()=> toonDoelwoord();
+    speechSynthesis.speak(u);
+    setTimeout(()=>{ try{ speechSynthesis.resume(); }catch(e){} }, 120);
+  }catch(e){ toonDoelwoord(); }
+}
+function toonDoelwoord(){ document.getElementById("doelwoord").textContent = ronde[huidig].w; }
+
+/* =================== HERKENNING =================== */
+let templates = [];
+function kenmerken(canvas){
+  const c=canvas, ctx=c.getContext("2d");
+  const img = ctx.getImageData(0,0,c.width,c.height).data;
+  let minx=1e9,miny=1e9,maxx=-1,maxy=-1;
+  for(let y=0;y<c.height;y++) for(let x=0;x<c.width;x++){
+    if(img[(y*c.width+x)*4+3] > 40){ if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; }
+  }
+  if(maxx<0) return null;
+  const bw=maxx-minx+1, bh=maxy-miny+1, s=20/Math.max(bw,bh);
+  const tmp=document.createElement("canvas"); tmp.width=28; tmp.height=28;
+  const t=tmp.getContext("2d"); const dw=bw*s, dh=bh*s;
+  t.drawImage(c, minx,miny,bw,bh, (28-dw)/2,(28-dh)/2, dw,dh);
+  const d=t.getImageData(0,0,28,28).data, v=new Float32Array(784);
+  for(let i=0;i<784;i++) v[i]=d[i*4+3]/255;
+  return v;
+}
+function afstand(a,b){ let s=0; for(let i=0;i<784;i++){const d=a[i]-b[i]; s+=d*d;} return s; }
+function bouwTemplates(){
+  const fonts=["sans-serif","serif","cursive","monospace"], abc="abcdefghijklmnopqrstuvwxyz".split("");
+  const c=document.createElement("canvas"); c.width=160; c.height=160; const ctx=c.getContext("2d");
+  abc.forEach(ch=> fonts.forEach(f=>{
+    ctx.clearRect(0,0,160,160); ctx.fillStyle="#000"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.font="120px "+f;
+    ctx.fillText(ch,80,84);
+    const img=ctx.getImageData(0,0,160,160);
+    const tc=document.createElement("canvas"); tc.width=160; tc.height=160; const tx=tc.getContext("2d");
+    for(let i=0;i<img.data.length;i+=4){ img.data[i+3] = img.data[i]<128 ? 255 : 0; }
+    tx.putImageData(img,0,0);
+    const v=kenmerken(tc); if(v) templates.push({ch,v});
+  }));
+}
+function herken(canvas){
+  const v=kenmerken(canvas); if(!v) return null;
+  let best=null,bd=1e18;
+  for(const t of templates){ const d=afstand(v,t.v); if(d<bd){bd=d; best=t.ch;} }
+  for(const t of geleerdeTemplates()){ const d=afstand(v,t.v)*0.55; if(d<bd){bd=d; best=t.ch;} } // Boaz' eigen handschrift telt zwaarder
+  return best;
+}
+/* --- Leert mee: onthoudt hoe Boaz zijn letters schrijft --- */
+function leerLetter(letter, canvas){
+  const v=kenmerken(canvas); if(!v) return;
+  let str=""; for(let i=0;i<784;i++) str += v[i]>0.35 ? "1" : "0";
+  state.samples = state.samples || {};
+  const arr = state.samples[letter] = state.samples[letter] || [];
+  arr.push(str);
+  if(arr.length>8) arr.shift();          // hou de 8 recentste voorbeelden per letter
+}
+function leerAlles(vakken){ vakken.forEach(v=> leerLetter(v.dataset.letter, v._canvas)); }
+function geleerdeTemplates(){
+  const out=[], s=state.samples||{};
+  for(const ch in s) for(const str of s[ch]){
+    const v=new Float32Array(784);
+    for(let i=0;i<784;i++) v[i] = str.charCodeAt(i)===49 ? 1 : 0;
+    out.push({ch,v});
+  }
+  return out;
+}
+function aantalSamples(){ let n=0; const s=state.samples||{}; for(const ch in s) n+=s[ch].length; return n; }
+
+/* =================== SCHERMEN =================== */
+function toon(id){
+  document.querySelectorAll(".scherm").forEach(s=> s.classList.remove("actief"));
+  document.getElementById(id).classList.add("actief");
+  window.scrollTo(0,0);
+}
+
+/* =================== HOME =================== */
+function tekenEiland(){
+  const svg = document.getElementById("eilandSvg");
+  svg.innerHTML = `
+    <rect x="0" y="0" width="1000" height="340" fill="#BFE8F5"/>
+    <circle cx="900" cy="56" r="34" fill="#FFD24A"/>
+    <ellipse cx="180" cy="60" rx="60" ry="20" fill="#fff" opacity=".9"/>
+    <ellipse cx="240" cy="52" rx="44" ry="18" fill="#fff" opacity=".9"/>
+    <rect x="0" y="200" width="1000" height="140" fill="#46B0D8"/>
+    <rect x="0" y="200" width="1000" height="16" fill="#6FC6E4"/>
+    <ellipse cx="500" cy="305" rx="460" ry="82" fill="#EFD597"/>
+    <ellipse cx="500" cy="296" rx="460" ry="66" fill="#F6E7B8"/>
+    ${palm(180,300,1)} ${palm(760,296,.9)} ${palm(880,306,.8)}`;
+}
+function palm(x,y,s){
+  return `<g transform="translate(${x},${y}) scale(${s})">
+    <path d="M0 0 C -6 -46 8 -86 -4 -126" stroke="#B5793E" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <g transform="translate(-4,-126)">
+      <ellipse cx="42" cy="0" rx="46" ry="13" fill="#2FA05A" transform="rotate(-160)"/>
+      <ellipse cx="42" cy="0" rx="48" ry="13" fill="#268B4C" transform="rotate(-120)"/>
+      <ellipse cx="42" cy="0" rx="50" ry="13" fill="#2FA05A" transform="rotate(-90)"/>
+      <ellipse cx="42" cy="0" rx="48" ry="13" fill="#268B4C" transform="rotate(-60)"/>
+      <ellipse cx="42" cy="0" rx="46" ry="13" fill="#2FA05A" transform="rotate(-20)"/>
+      <circle cx="0" cy="-2" r="6" fill="#7A4A24"/><circle cx="9" cy="3" r="6" fill="#7A4A24"/>
+    </g></g>`;
+}
+function tekenDieren(){
+  const laag = document.getElementById("dierenOpEiland");
+  laag.innerHTML = "";
+  RULES.forEach(r=>{
+    const n = niveauVan(r.id);
+    if(n<=0) return;
+    const [px,py] = PLEK[r.id] || [50,75];
+    const sp = document.createElement("span");
+    sp.textContent = r.emoji;
+    sp.style.left = px+"%"; sp.style.top = py+"%";
+    sp.style.fontSize = (26 + n*7) + "px";
+    sp.title = r.naam + " · niveau " + n;
+    laag.appendChild(sp);
+  });
+}
+function tekenVerzameling(){
+  const g = document.getElementById("verzamelGrid");
+  g.innerHTML = "";
+  RULES.forEach(r=>{
+    const n = niveauVan(r.id);
+    const sterren = "★".repeat(n) + "☆".repeat(5-n);
+    const div = document.createElement("div");
+    div.className = "tegel";
+    div.innerHTML = `<div class="kop"><span class="em">${r.emoji}</span> ${r.naam}</div>
+      <div class="uitleg">${r.uitleg}</div>
+      <div class="sterren">${sterren}</div>`;
+    g.appendChild(div);
+  });
+}
+function ververHome(){
+  document.getElementById("muntHome").textContent = state.munten;
+  document.getElementById("doelNaam").textContent = "🎁 " + state.doelNaam;
+  document.getElementById("doelCijfers").textContent = state.munten + " / " + state.doelBedrag;
+  const pct = Math.min(100, Math.round(state.munten/state.doelBedrag*100));
+  document.getElementById("doelVul").style.width = pct + "%";
+  tekenDieren(); tekenVerzameling();
+}
+
+/* =================== RONDE =================== */
+let ronde = [], huidig = 0, rondeMunten = 0, geleerd = {};
+
+function kiesRonde(){
+  const lijst = [];
+  const wachters = (state.wachtrij||[]).slice(0,2);           // eerst 2 fout-woorden terug
+  wachters.forEach(w=>{ const item = WOORDEN.find(x=>x.w===w); if(item) lijst.push(item); });
+  const pool = [];
+  WOORDEN.forEach(it=>{ const gewicht = RULE[it.r].zwaar ? 3 : 1; for(let i=0;i<gewicht;i++) pool.push(it); });
+  while(lijst.length < 5){
+    const kand = pool[Math.floor(Math.random()*pool.length)];
+    if(!lijst.includes(kand)) lijst.push(kand);
+  }
+  return lijst.slice(0,5);
+}
+function startRonde(){
+  ontgrendelSpraak();
+  ronde = kiesRonde(); huidig = 0; rondeMunten = 0; geleerd = {};
+  document.getElementById("muntSpel").textContent = state.munten;
+  toon("spel"); toonWoord();
+}
+function toonWoord(){
+  const item = ronde[huidig];
+  document.getElementById("voortgang").textContent = "Woord " + (huidig+1) + " / " + ronde.length;
+  document.getElementById("zin").innerHTML = item.z;
+  document.getElementById("emoji").textContent = item.e || "";
+  document.getElementById("doelwoord").textContent = "";
+  const hint = document.getElementById("hint");
+  hint.style.display="none"; hint.textContent = "💡 " + RULE[item.r].naam + "-regel: " + RULE[item.r].uitleg;
+  document.getElementById("uitslag").textContent=""; document.getElementById("uitslag").className="uitslag";
+  document.getElementById("fix").style.display="none";
+  document.getElementById("volgende").style.display="none";
+  document.getElementById("nakijken").style.display="";
+  const h = document.getElementById("vakjes"); h.innerHTML="";
+  item.w.split("").forEach((l,i)=> h.appendChild(maakVak(l,i)));
+  setTimeout(()=> spreek(item.w), 400);
+}
+function maakVak(letter,i){
+  const vak=document.createElement("div"); vak.className="vak"; vak.dataset.letter=letter;
+  const lijn=document.createElement("div"); lijn.className="lijn";
+  const canvas=document.createElement("canvas");
+  const badge=document.createElement("div"); badge.className="badge";
+  const las=document.createElement("div"); las.className="las";
+  const wis=document.createElement("button"); wis.className="wisje"; wis.textContent="wis";
+  vak.append(canvas,lijn,badge,las,wis);
+  const dpr=window.devicePixelRatio||1;
+  requestAnimationFrame(()=>{
+    const r=vak.getBoundingClientRect();
+    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    const ctx=canvas.getContext("2d"); ctx.scale(dpr,dpr);
+    ctx.lineWidth=11; ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle="#173a5e";
+  });
+  const ctx=canvas.getContext("2d"); let tekent=false, vorige=null;
+  const punt=e=>{ const r=canvas.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; };
+  canvas.addEventListener("pointerdown",e=>{ e.preventDefault(); tekent=true; vorige=punt(e); canvas.setPointerCapture(e.pointerId);
+    ctx.beginPath(); ctx.moveTo(vorige.x,vorige.y); ctx.lineTo(vorige.x+.1,vorige.y+.1); ctx.stroke(); });
+  canvas.addEventListener("pointermove",e=>{ if(!tekent) return; e.preventDefault(); const p=punt(e);
+    ctx.beginPath(); ctx.moveTo(vorige.x,vorige.y); ctx.lineTo(p.x,p.y); ctx.stroke(); vorige=p; });
+  const stop=()=>tekent=false;
+  canvas.addEventListener("pointerup",stop); canvas.addEventListener("pointercancel",stop);
+  wis.addEventListener("click",()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); vak.className="vak"; badge.textContent=""; las.textContent=""; });
+  vak._canvas=canvas; vak._badge=badge; vak._las=las;
+  return vak;
+}
+function nakijken(){
+  const vakken=[...document.querySelectorAll(".vak")];
+  const item=ronde[huidig]; let geschreven=0, twijfel=[];
+  vakken.forEach(vak=>{
+    const verwacht=vak.dataset.letter, gelezen=herken(vak._canvas);
+    if(gelezen===null){ vak.className="vak"; return; }
+    geschreven++;
+    if(gelezen===verwacht){ vak.className="vak goed"; vak._badge.textContent="✓"; }
+    else{ vak.className="vak fout"; vak._badge.textContent="?"; vak._las.textContent="gelezen: "+gelezen; twijfel.push(vak); }
+  });
+  const uit=document.getElementById("uitslag");
+  if(geschreven < item.w.length){ uit.textContent="Schrijf eerst alle letters ✍️"; uit.className="uitslag bijna"; return; }
+  if(twijfel.length===0){ leerAlles(vakken); goedGedaan(10); }   // helemaal goed → van elke letter leren
+  else{
+    uit.textContent="Bijna! Kijk naar de gekleurde letters."; uit.className="uitslag bijna";
+    document.getElementById("hint").style.display="block";
+    toonFix(vakken, twijfel);
+  }
+}
+function toonFix(vakken, twijfel){
+  const fix=document.getElementById("fix"), kn=document.getElementById("fixKnoppen");
+  kn.innerHTML=""; fix.style.display="block";
+  const ja=document.createElement("button"); ja.className="ja"; ja.textContent="Boaz had 't tóch goed ✓";
+  const nee=document.createElement("button"); nee.className="nee"; nee.textContent="Echt fout ✎";
+  ja.onclick=()=>{ leerAlles(vakken); twijfel.forEach(v=>{ v.className="vak goed"; v._badge.textContent="✓"; }); fix.style.display="none"; goedGedaan(6); }; // juist deze letters zijn goud om van te leren
+  nee.onclick=()=>{ fix.style.display="none"; foutGedaan(); };
+  kn.append(ja,nee);
+}
+function goedGedaan(munten){
+  const item=ronde[huidig];
+  state.munten += munten; rondeMunten += munten;
+  state.goed[item.r] = (state.goed[item.r]||0) + 1;
+  geleerd[item.r] = true;
+  state.wachtrij = (state.wachtrij||[]).filter(w=>w!==item.w);   // uit wachtrij halen
+  bewaar();
+  document.getElementById("muntSpel").textContent = state.munten;
+  const uit=document.getElementById("uitslag"); uit.textContent="Goed gedaan! 🎉 +"+munten+" munten"; uit.className="uitslag goed";
+  klaarMetWoord();
+}
+function foutGedaan(){
+  const item=ronde[huidig];
+  state.fout[item.r] = (state.fout[item.r]||0) + 1;
+  if(!(state.wachtrij||[]).includes(item.w)){ state.wachtrij = state.wachtrij||[]; state.wachtrij.push(item.w); }
+  bewaar();
+  const uit=document.getElementById("uitslag"); uit.textContent="Geeft niks — dit woord oefenen we later nog eens 💪"; uit.className="uitslag bijna";
+  spreek(item.w);
+  klaarMetWoord();
+}
+function klaarMetWoord(){
+  document.getElementById("nakijken").style.display="none";
+  document.getElementById("volgende").style.display="";
+  document.getElementById("volgende").textContent = (huidig < ronde.length-1) ? "Volgende →" : "Klaar! 🎉";
+}
+function volgendeWoord(){
+  if(huidig < ronde.length-1){ huidig++; toonWoord(); }
+  else toonKlaar();
+}
+function toonKlaar(){
+  document.getElementById("rondeMunten").textContent = rondeMunten;
+  const blok=document.getElementById("nieuwBlok"); blok.innerHTML="";
+  const geleerdeRules = Object.keys(geleerd);
+  if(geleerdeRules.length){
+    const t=document.createElement("div"); t.style.fontWeight="800"; t.style.marginBottom="6px"; t.textContent="Dieren geholpen:";
+    blok.appendChild(t);
+    geleerdeRules.forEach(id=>{
+      const r=RULE[id], rij=document.createElement("div"); rij.className="regel";
+      rij.innerHTML = `<span style="font-size:26px">${r.emoji}</span> ${r.naam} — niveau ${niveauVan(id)} ${"★".repeat(niveauVan(id))}`;
+      blok.appendChild(rij);
+    });
+  } else { blok.innerHTML = "<div class='regel'>Volgende keer meer dieren redden! 🌴</div>"; }
+  toon("klaar");
+}
+
+/* =================== OUDER =================== */
+function openOuder(){
+  document.getElementById("inNaam").value = state.doelNaam;
+  document.getElementById("inBedrag").value = state.doelBedrag;
+  const tb=document.getElementById("fouttabel"); tb.innerHTML="";
+  RULES.slice().sort((a,b)=>(state.fout[b.id]||0)-(state.fout[a.id]||0)).forEach(r=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML = `<td>${r.emoji} ${r.naam}</td><td>${r.uitleg}</td><td>${state.fout[r.id]||0}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById("leerInfo").textContent = "✍️ Handschrift geleerd: " + aantalSamples() + " voorbeelden — hoe meer Boaz speelt, hoe beter de herkenning wordt.";
+  toonStemStatus();
+  document.getElementById("ouder").classList.add("actief");
+}
+function slaOuderOp(){
+  const naam=document.getElementById("inNaam").value.trim();
+  const bedrag=parseInt(document.getElementById("inBedrag").value,10);
+  if(naam) state.doelNaam=naam;
+  if(bedrag && bedrag>0) state.doelBedrag=bedrag;
+  bewaar(); ververHome();
+  document.getElementById("ouder").classList.remove("actief");
+}
+
+/* =================== KNOPPEN =================== */
+document.getElementById("speel").onclick = startRonde;
+document.getElementById("stop").onclick = ()=>{ toon("home"); ververHome(); };
+document.getElementById("terug").onclick = ()=>{ toon("home"); ververHome(); };
+document.getElementById("luister").onclick = ()=>{ ontgrendelSpraak(); spreek(ronde[huidig].w); };
+document.getElementById("toon").onclick = toonDoelwoord;
+document.getElementById("wisAlles").onclick = toonWoord;
+document.getElementById("nakijken").onclick = nakijken;
+document.getElementById("volgende").onclick = volgendeWoord;
+document.getElementById("gear").onclick = openOuder;
+document.getElementById("sluit").onclick = ()=> document.getElementById("ouder").classList.remove("actief");
+document.getElementById("opslaan").onclick = slaOuderOp;
+document.getElementById("wisVoortgang").onclick = ()=>{
+  if(confirm("Weet je zeker dat je alle munten en dieren wilt wissen?")){ state=standaardState(); bewaar(); ververHome(); document.getElementById("ouder").classList.remove("actief"); }
+};
+
+/* =================== OFFLINE (PWA) =================== */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+
+/* =================== START =================== */
+bouwTemplates();
+tekenEiland();
+ververHome();
+</script>
+</body>
+</html>

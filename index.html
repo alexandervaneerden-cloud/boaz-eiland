@@ -15,10 +15,7 @@
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
   html,body{margin:0; padding:0;}
-  body{
-    font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;
-    background:var(--zee-licht); color:var(--ink); min-height:100vh; overscroll-behavior:none;
-  }
+  body{ font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif; background:var(--zee-licht); color:var(--ink); min-height:100vh; overscroll-behavior:none; }
   .scherm{display:none; padding:14px; max-width:1000px; margin:0 auto;}
   .scherm.actief{display:block;}
   .knop{border:none; border-radius:999px; padding:15px 26px; font-size:18px; font-weight:800; cursor:pointer;}
@@ -26,6 +23,7 @@
   .knop.groen{background:var(--groen); color:#fff;}
   .knop.grijs{background:#fff; color:var(--blauw); box-shadow:0 2px 0 rgba(0,0,0,.06);}
   .knop:active{transform:scale(.97);}
+  .knop:disabled{opacity:.5;}
 
   /* ---- HOME ---- */
   .hud{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
@@ -43,22 +41,30 @@
 
   .verzameling{margin-top:16px;}
   .verzameling h2{font-size:18px; color:var(--palm-donker); margin:0 0 10px;}
+  .verzameling h2 .telling{color:var(--groen);}
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
-  .tegel{background:#fff; border-radius:14px; padding:12px; box-shadow:0 2px 0 rgba(0,0,0,.05);}
+  .tegel{background:#fff; border-radius:14px; padding:12px; box-shadow:0 2px 0 rgba(0,0,0,.05); position:relative;}
   .tegel .kop{display:flex; align-items:center; gap:8px; font-weight:800;}
   .tegel .kop .em{font-size:26px;}
+  .tegel .kop .em.dim{filter:grayscale(1); opacity:.45;}
   .tegel .uitleg{font-size:12px; color:#8a8f96; margin-top:3px; min-height:28px;}
   .sterren{margin-top:6px; font-size:16px; letter-spacing:2px; color:var(--goud);}
   .tegel.gered{background:#EAF7EF; border:2px solid var(--groen);}
   .tegel.nietgered{opacity:.7;}
-  .tegel .kop .em.dim{filter:grayscale(1); opacity:.45;}
   .badge-gered{margin-left:auto; background:var(--groen); color:#fff; font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px;}
-  .verzameling h2 .telling{color:var(--groen);}
+  .vraagknop{position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; border:none; background:#EAF3FF; color:var(--blauw); font-weight:800; font-size:15px; cursor:pointer;}
+  .mopbalk{text-align:center; margin-top:14px;}
 
   /* ---- SPEL ---- */
+  #spel{position:relative; min-height:100vh;}
+  .spelbg{position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+    background:linear-gradient(180deg,#BFE8F5 0%,#CDEBF4 40%,#E7EFCB 52%,#F6E7B8 100%);}
+  .spelbg .zon{position:absolute; top:18px; right:26px; width:66px; height:66px; border-radius:50%; background:#FFD24A; opacity:.85;}
+  .spelbg svg{position:absolute; bottom:-8px; opacity:.7;}
+  #spel > .spelkop, #spel > .kaart, #spel > .vakjes, #spel > .knoppen, #spel > .uitslag, #spel > .fix{position:relative; z-index:1;}
   .spelkop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
-  .voortgang{font-weight:800; color:var(--blauw);}
-  .kaart{background:#fff; border-radius:20px; padding:16px 18px; box-shadow:0 3px 0 rgba(0,0,0,.06); margin-bottom:14px;}
+  .voortgang{font-weight:800; color:var(--blauw); background:rgba(255,255,255,.7); border-radius:999px; padding:6px 12px;}
+  .kaart{background:#fff; border-radius:20px; padding:16px 18px; box-shadow:0 3px 0 rgba(0,0,0,.08); margin-bottom:14px;}
   .woordrij{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
   .luister{background:var(--groen); color:#fff; border:none; border-radius:999px; padding:14px 22px; font-size:18px; font-weight:800; display:inline-flex; align-items:center; gap:10px; cursor:pointer;}
   .luister:active{transform:scale(.97);}
@@ -67,7 +73,6 @@
   .zin b{color:var(--palm-donker);}
   .hint{margin-top:12px; background:#EAF3DE; border-radius:14px; padding:10px 14px; font-size:15px; color:#27500A; line-height:1.5; display:none;}
   .doelwoord{text-align:center; font-size:26px; font-weight:800; letter-spacing:6px; color:var(--zand-donker); min-height:16px; margin-top:6px;}
-
   .vakjes{display:flex; gap:8px; flex-wrap:nowrap; justify-content:center; width:100%; margin:0 auto 14px;}
   .vak{background:#fff; border:3px dashed var(--zand-donker); border-radius:18px; flex:1 1 0; min-width:0; max-width:150px; aspect-ratio:4/5; position:relative; touch-action:none;}
   .vak.goed{border-style:solid; border-color:var(--groen);}
@@ -87,24 +92,36 @@
   .fix button{border:none; border-radius:999px; padding:9px 15px; font-weight:800; margin:6px 4px 0; cursor:pointer;}
   .ja{background:var(--groen); color:#fff;} .nee{background:#e0e0e0; color:#555;}
 
-  /* ---- KLAAR ---- */
-  .klaar-box{text-align:center; padding:30px 16px;}
+  /* ---- KLAAR + GELUKRAD ---- */
+  .klaar-box{text-align:center; padding:22px 16px;}
   .klaar-box .groot{font-size:30px; font-weight:800; color:var(--palm-donker);}
-  .klaar-box .munt-groot{font-size:40px; font-weight:800; color:var(--goud); margin:14px 0;}
-  .nieuw{background:#fff; border-radius:16px; padding:14px; margin:14px auto; max-width:420px; box-shadow:0 2px 0 rgba(0,0,0,.06);}
+  .klaar-box .munt-groot{font-size:38px; font-weight:800; color:var(--goud); margin:10px 0;}
+  .nieuw{background:#fff; border-radius:16px; padding:12px; margin:12px auto; max-width:420px; box-shadow:0 2px 0 rgba(0,0,0,.06);}
   .nieuw .regel{display:flex; align-items:center; gap:10px; justify-content:center; font-size:17px; margin:6px 0;}
+  .rad-wrap{position:relative; width:240px; height:240px; margin:10px auto 6px;}
+  .rad-pijl{position:absolute; top:-6px; left:50%; transform:translateX(-50%); font-size:30px; color:var(--rood); z-index:2;}
+  .rad{width:240px; height:240px; border-radius:50%; border:8px solid #fff; box-shadow:0 3px 8px rgba(0,0,0,.2); position:relative;}
+  .rad .lbl{position:absolute; left:50%; top:50%; font-weight:800; color:#fff; font-size:18px; text-shadow:0 1px 2px rgba(0,0,0,.4);}
 
-  /* ---- OUDER ---- */
+  /* ---- OVERLAYS ---- */
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; padding:16px; z-index:10;}
   .overlay.actief{display:flex;}
   .paneel{background:#fff; border-radius:20px; padding:20px; max-width:460px; width:100%; max-height:90vh; overflow:auto;}
   .paneel h2{margin:0 0 12px; color:var(--blauw);}
   .paneel label{display:block; font-weight:800; font-size:14px; margin:12px 0 4px;}
-  .paneel input{width:100%; padding:12px; border:2px solid #e3e6ea; border-radius:12px; font-size:16px;}
+  .paneel input, .paneel textarea{width:100%; padding:12px; border:2px solid #e3e6ea; border-radius:12px; font-size:15px; font-family:inherit;}
   .fouttabel{width:100%; border-collapse:collapse; margin-top:8px; font-size:14px;}
   .fouttabel td{padding:6px 4px; border-bottom:1px solid #eee;}
   .fouttabel td:last-child{text-align:right; font-weight:800;}
-  .statusregel{font-size:12px; color:#98a1ab; margin-top:14px; text-align:center;}
+  .statusregel{font-size:12px; color:#98a1ab; margin-top:12px; text-align:center;}
+  .sectie{border-top:1px solid #eee; margin-top:16px; padding-top:12px;}
+  .sectie h3{margin:0 0 8px; font-size:15px; color:var(--palm-donker);}
+  .miniknop{border:none; border-radius:12px; padding:11px 14px; font-weight:800; font-size:14px; cursor:pointer; background:#EAF3FF; color:var(--blauw); margin:4px 6px 4px 0;}
+  .info-em{font-size:52px; text-align:center;}
+  .info-titel{font-size:22px; font-weight:800; text-align:center; color:var(--palm-donker); margin:6px 0;}
+  .info-body{font-size:17px; line-height:1.5; text-align:center; color:var(--ink);}
+  .info-body .vb{display:block; margin-top:10px; color:var(--blauw); font-weight:800;}
+  .info-knoppen{display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
 </style>
 </head>
 <body>
@@ -126,8 +143,12 @@
     <div class="dieren-op-eiland" id="dierenOpEiland"></div>
     <div class="speelknop">
       <button class="knop primair" id="speel">▶ Speel!</button>
-      <span style="font-family:inherit; font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.4); font-size:15px">Verdien munten &amp; red de dieren</span>
+      <span style="font-weight:800; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.4); font-size:15px">Verdien munten &amp; red de dieren</span>
     </div>
+  </div>
+
+  <div class="mopbalk">
+    <button class="knop grijs" id="mopKnop">🥱 Verveel je? Klik voor een mop!</button>
   </div>
 
   <div class="verzameling">
@@ -138,6 +159,7 @@
 
 <!-- ========== SPEL ========== -->
 <div class="scherm" id="spel">
+  <div class="spelbg" aria-hidden="true"><div class="zon"></div></div>
   <div class="spelkop">
     <button class="knop grijs" id="stop" style="padding:10px 18px; font-size:15px">← Stop</button>
     <div class="voortgang" id="voortgang">Woord 1 / 5</div>
@@ -149,7 +171,6 @@
       <button class="luister" id="luister">🔊 Luister</button>
       <div class="emoji" id="emoji"></div>
       <div class="zin" id="zin"></div>
-      <button class="knop grijs" id="toon" style="padding:10px 16px; font-size:15px;">👁 Toon</button>
     </div>
     <div class="doelwoord" id="doelwoord"></div>
     <div class="hint" id="hint"></div>
@@ -164,10 +185,7 @@
   </div>
 
   <div class="uitslag" id="uitslag"></div>
-  <div class="fix" id="fix">
-    Twijfel — heeft Boaz het tóch goed geschreven?
-    <div id="fixKnoppen"></div>
-  </div>
+  <div class="fix" id="fix">Twijfel — heeft Boaz het tóch goed geschreven?<div id="fixKnoppen"></div></div>
 </div>
 
 <!-- ========== KLAAR ========== -->
@@ -176,7 +194,11 @@
     <div class="groot">Rondje klaar! 🎉</div>
     <div class="munt-groot">🪙 +<span id="rondeMunten">0</span></div>
     <div class="nieuw" id="nieuwBlok"></div>
-    <button class="knop primair" id="terug">🌴 Terug naar het eiland</button>
+    <div class="groot" style="font-size:20px; margin-top:8px">🎡 Draai het gelukrad!</div>
+    <div class="rad-wrap"><div class="rad-pijl">▼</div><div class="rad" id="rad"></div></div>
+    <button class="knop primair" id="draai">🎡 Draai!</button>
+    <div class="uitslag" id="radUitslag"></div>
+    <button class="knop groen" id="terug" style="margin-top:6px">🌴 Terug naar het eiland</button>
   </div>
 </div>
 
@@ -188,14 +210,25 @@
     <input id="inNaam" type="text" placeholder="Bijv. een ijsje">
     <label for="inBedrag">Aantal munten voor het doel</label>
     <input id="inBedrag" type="number" min="10" step="10" placeholder="500">
-
     <label>Fouten per spellingregel</label>
     <table class="fouttabel" id="fouttabel"></table>
-
-    <div style="display:flex; gap:10px; margin-top:18px;">
+    <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="knop groen" id="opslaan" style="flex:1">Opslaan</button>
       <button class="knop grijs" id="sluit" style="flex:1">Sluiten</button>
     </div>
+
+    <div class="sectie">
+      <h3>💾 Back-up &amp; herstel</h3>
+      <div style="font-size:13px; color:#8a8f96; margin-bottom:8px">Bewaar munten &amp; handschrift voor als de app opnieuw geïnstalleerd wordt of naar een nieuwe tablet gaat.</div>
+      <button class="miniknop" id="dlBackup">📄 Download back-up</button>
+      <button class="miniknop" id="kopieerCode">📋 Kopieer code</button>
+      <label for="herstelBestand">Herstel uit bestand</label>
+      <input id="herstelBestand" type="file" accept="application/json,.json">
+      <label for="codeVeld">Of plak hier een back-up code</label>
+      <textarea id="codeVeld" rows="3" placeholder="Plak hier je back-up code…"></textarea>
+      <button class="miniknop" id="herstelCode" style="margin-top:8px">↺ Herstel uit code</button>
+    </div>
+
     <div style="text-align:center; margin-top:12px;">
       <button style="background:none; border:none; color:#c0392b; font-size:13px; text-decoration:underline; cursor:pointer" id="wisVoortgang">Alle voortgang wissen</button>
     </div>
@@ -205,79 +238,154 @@
   </div>
 </div>
 
+<!-- ========== INFO (mop / uitleg) ========== -->
+<div class="overlay" id="info">
+  <div class="paneel">
+    <div class="info-em" id="infoEm"></div>
+    <div class="info-titel" id="infoTitel"></div>
+    <div class="info-body" id="infoBody"></div>
+    <div class="info-knoppen" id="infoKnoppen"></div>
+  </div>
+</div>
+
 <script>
 /* =================== SPELLINGREGELS (= dieren) =================== */
 const RULES = [
-  {id:"kikker",    naam:"Kikker",    emoji:"🐸", uitleg:"korte klank → dubbele letter",        zwaar:true},
-  {id:"haai",      naam:"Haai",      emoji:"🦈", uitleg:"aai · ooi · oei",                     zwaar:true},
-  {id:"krekel",    naam:"Krekel",    emoji:"🦗", uitleg:"lange klank, open lettergreep → één letter", zwaar:true},
-  {id:"geit",      naam:"Geit",      emoji:"🐐", uitleg:"ei of ij"},
-  {id:"beer",      naam:"Beer",      emoji:"🐻", uitleg:"eer · oor · eur"},
-  {id:"pauw",      naam:"Pauw",      emoji:"🦚", uitleg:"au of ou"},
-  {id:"stinkdier", naam:"Stinkdier", emoji:"🦨", uitleg:"woorden met nk"},
+  {id:"kikker", naam:"Kikker", emoji:"🐸", uitleg:"korte klank → dubbele letter", zwaar:true,
+    kind:"Hoor je een korte klank? Dan schrijf je een dubbele letter.", voorbeeld:"mes → messen"},
+  {id:"haai", naam:"Haai", emoji:"🦈", uitleg:"aai · ooi · oei", zwaar:true,
+    kind:"De klanken aai, ooi en oei schrijf je met twee klinkers.", voorbeeld:"de haai, ik gooi, jij roeit"},
+  {id:"krekel", naam:"Krekel", emoji:"🦗", uitleg:"lange klank open lettergreep → één letter", zwaar:true,
+    kind:"Een lange klank aan het eind van een klankgroep schrijf je met één klinker.", voorbeeld:"boom → bomen"},
+  {id:"geit", naam:"Geit", emoji:"🐐", uitleg:"ei of ij",
+    kind:"De ei-klank schrijf je met ei of ij. Bij elk woord onthoud je welke.", voorbeeld:"trein met ei, blij met ij"},
+  {id:"beer", naam:"Beer", emoji:"🐻", uitleg:"eer · oor · eur",
+    kind:"De klanken eer, oor en eur schrijf je met twee klinkers.", voorbeeld:"peer, oor, kleur"},
+  {id:"pauw", naam:"Pauw", emoji:"🦚", uitleg:"au of ou",
+    kind:"De au-klank schrijf je met au of ou. Bij elk woord onthoud je welke.", voorbeeld:"blauw met au, goud met ou"},
+  {id:"stinkdier", naam:"Stinkdier", emoji:"🦨", uitleg:"woorden met nk",
+    kind:"Je hoort 'ngk', maar je schrijft nk — zonder g.", voorbeeld:"bank, pink, drinken"},
 ];
 const RULE = {}; RULES.forEach(r => RULE[r.id] = r);
-/* posities van de dieren op het eiland (in % van breedte/hoogte) */
 const PLEK = {kikker:[24,74], haai:[52,88], krekel:[40,66], geit:[68,72], beer:[80,80], pauw:[14,80], stinkdier:[60,70]};
 
 /* =================== WOORDEN =================== */
 const WOORDEN = [
-  {w:"poppen", e:"🧸", r:"kikker", z:"De <b>…</b> staan op de plank."},
-  {w:"ballen", e:"⚽", r:"kikker", z:"We spelen met twee <b>…</b>."},
-  {w:"kippen", e:"🐔", r:"kikker", z:"De <b>…</b> lopen in de tuin."},
-  {w:"mussen", e:"🐦", r:"kikker", z:"Er zitten <b>…</b> in de heg."},
-  {w:"bakker", e:"🍞", r:"kikker", z:"Het brood komt van de <b>…</b>."},
+  {w:"poppen",e:"🧸",r:"kikker",z:"De <b>…</b> staan op de plank."},
+  {w:"ballen",e:"⚽",r:"kikker",z:"We spelen met twee <b>…</b>."},
+  {w:"kippen",e:"🐔",r:"kikker",z:"De <b>…</b> lopen in de tuin."},
+  {w:"mussen",e:"🐦",r:"kikker",z:"Er zitten <b>…</b> in de heg."},
+  {w:"bakker",e:"🍞",r:"kikker",z:"Het brood komt van de <b>…</b>."},
+  {w:"vissen",e:"🐟",r:"kikker",z:"In de zee zwemmen veel <b>…</b>."},
+  {w:"katten",e:"🐈",r:"kikker",z:"De twee <b>…</b> slapen lekker."},
+  {w:"bussen",e:"🚌",r:"kikker",z:"Er rijden twee <b>…</b>."},
+  {w:"kussen",e:"🛏️",r:"kikker",z:"Op het bed liggen zachte <b>…</b>."},
+  {w:"pillen",e:"💊",r:"kikker",z:"De dokter geeft <b>…</b>."},
+  {w:"takken",e:"🌿",r:"kikker",z:"De <b>…</b> vallen uit de boom."},
+  {w:"lippen",e:"👄",r:"kikker",z:"Ik lik mijn <b>…</b> af."},
 
-  {w:"haai",   e:"🦈", r:"haai",   z:"De <b>…</b> zwemt in de zee."},
-  {w:"maai",   e:"🌾", r:"haai",   z:"Ik <b>…</b> het gras."},
-  {w:"mooi",   e:"✨", r:"haai",   z:"Het eiland is heel <b>…</b>."},
-  {w:"kooi",   e:"🐦", r:"haai",   z:"De vogel zit in een <b>…</b>."},
-  {w:"gooi",   e:"🥎", r:"haai",   z:"Ik <b>…</b> de bal."},
+  {w:"haai",e:"🦈",r:"haai",z:"De <b>…</b> zwemt in de zee."},
+  {w:"maai",e:"🌾",r:"haai",z:"Ik <b>…</b> het gras."},
+  {w:"kraai",e:"🐦‍⬛",r:"haai",z:"De zwarte <b>…</b> zit op het dak."},
+  {w:"draai",e:"🔄",r:"haai",z:"Ik <b>…</b> in het rond."},
+  {w:"zwaai",e:"👋",r:"haai",z:"Ik <b>…</b> naar oma."},
+  {w:"mooi",e:"✨",r:"haai",z:"Het eiland is heel <b>…</b>."},
+  {w:"kooi",e:"🐦",r:"haai",z:"De vogel zit in een <b>…</b>."},
+  {w:"gooi",e:"🥎",r:"haai",z:"Ik <b>…</b> de bal."},
+  {w:"strooi",e:"🧂",r:"haai",z:"Ik <b>…</b> zout op de friet."},
+  {w:"boei",e:"🛟",r:"haai",z:"In het water drijft een <b>…</b>."},
+  {w:"roei",e:"🚣",r:"haai",z:"Ik <b>…</b> met de boot."},
+  {w:"groei",e:"🌱",r:"haai",z:"Het plantje <b>…</b> hard."},
 
-  {w:"bomen",  e:"🌳", r:"krekel", z:"Er staan hoge <b>…</b> op het strand."},
-  {w:"beren",  e:"🐻", r:"krekel", z:"Twee <b>…</b> spelen in het zand."},
-  {w:"zwanen", e:"🦢", r:"krekel", z:"De witte <b>…</b> op het water."},
-  {w:"poten",  e:"🐾", r:"krekel", z:"De hond heeft vier <b>…</b>."},
-  {w:"muren",  e:"🧱", r:"krekel", z:"De <b>…</b> zijn van steen."},
+  {w:"bomen",e:"🌳",r:"krekel",z:"Er staan hoge <b>…</b> op het strand."},
+  {w:"beren",e:"🐻",r:"krekel",z:"Twee <b>…</b> spelen in het zand."},
+  {w:"zwanen",e:"🦢",r:"krekel",z:"De witte <b>…</b> op het water."},
+  {w:"poten",e:"🐾",r:"krekel",z:"De hond heeft vier <b>…</b>."},
+  {w:"muren",e:"🧱",r:"krekel",z:"De <b>…</b> zijn van steen."},
+  {w:"benen",e:"🦵",r:"krekel",z:"Ik ren op mijn twee <b>…</b>."},
+  {w:"namen",e:"📛",r:"krekel",z:"We schrijven onze <b>…</b> op."},
+  {w:"dozen",e:"📦",r:"krekel",z:"De <b>…</b> staan op zolder."},
+  {w:"ramen",e:"🪟",r:"krekel",z:"De <b>…</b> zijn schoon."},
+  {w:"vazen",e:"🏺",r:"krekel",z:"In de <b>…</b> staan bloemen."},
+  {w:"tomaten",e:"🍅",r:"krekel",z:"Ik eet rode <b>…</b>."},
+  {w:"bananen",e:"🍌",r:"krekel",z:"Apen houden van <b>…</b>."},
 
-  {w:"trein",  e:"🚂", r:"geit",   z:"De <b>…</b> rijdt hard."},
-  {w:"ijs",    e:"🍦", r:"geit",   z:"Ik eet een lekker <b>…</b>."},
-  {w:"bij",    e:"🐝", r:"geit",   z:"De <b>…</b> maakt honing."},
-  {w:"ei",     e:"🥚", r:"geit",   z:"De kip legt een <b>…</b>."},
-  {w:"reis",   e:"🧳", r:"geit",   z:"We gaan op <b>…</b>."},
+  {w:"trein",e:"🚂",r:"geit",z:"De <b>…</b> rijdt hard."},
+  {w:"ijs",e:"🍦",r:"geit",z:"Ik eet een lekker <b>…</b>."},
+  {w:"bij",e:"🐝",r:"geit",z:"De <b>…</b> maakt honing."},
+  {w:"ei",e:"🥚",r:"geit",z:"De kip legt een <b>…</b>."},
+  {w:"reis",e:"🧳",r:"geit",z:"We gaan op <b>…</b>."},
+  {w:"klein",e:"🐜",r:"geit",z:"De mier is heel <b>…</b>."},
+  {w:"fijn",e:"😊",r:"geit",z:"Ik vind het heel <b>…</b>."},
+  {w:"wei",e:"🐄",r:"geit",z:"De koe staat in de <b>…</b>."},
+  {w:"dijk",e:"🌊",r:"geit",z:"We fietsen over de <b>…</b>."},
+  {w:"blij",e:"😄",r:"geit",z:"Ik ben heel <b>…</b>."},
+  {w:"prijs",e:"🏆",r:"geit",z:"Ik win een <b>…</b>."},
+  {w:"mei",e:"🌷",r:"geit",z:"In <b>…</b> bloeien de bloemen."},
 
-  {w:"peer",   e:"🍐", r:"beer",   z:"Ik eet een sappige <b>…</b>."},
-  {w:"deur",   e:"🚪", r:"beer",   z:"Doe de <b>…</b> dicht."},
-  {w:"oor",    e:"👂", r:"beer",   z:"Ik hoor met mijn <b>…</b>."},
-  {w:"kleur",  e:"🎨", r:"beer",   z:"Blauw is een mooie <b>…</b>."},
-  {w:"meer",   e:"🌊", r:"beer",   z:"We zwemmen in het <b>…</b>."},
+  {w:"peer",e:"🍐",r:"beer",z:"Ik eet een sappige <b>…</b>."},
+  {w:"deur",e:"🚪",r:"beer",z:"Doe de <b>…</b> dicht."},
+  {w:"oor",e:"👂",r:"beer",z:"Ik hoor met mijn <b>…</b>."},
+  {w:"kleur",e:"🎨",r:"beer",z:"Blauw is een mooie <b>…</b>."},
+  {w:"meer",e:"🌊",r:"beer",z:"We zwemmen in het <b>…</b>."},
+  {w:"beer",e:"🐻",r:"beer",z:"De <b>…</b> eet honing."},
+  {w:"weer",e:"⛅",r:"beer",z:"Het <b>…</b> is mooi vandaag."},
+  {w:"zeer",e:"🤕",r:"beer",z:"Mijn knie doet <b>…</b>."},
+  {w:"door",e:"➡️",r:"beer",z:"Ik loop <b>…</b> de deur."},
+  {w:"voor",e:"⬆️",r:"beer",z:"Ik sta <b>…</b> in de rij."},
+  {w:"geur",e:"👃",r:"beer",z:"De bloem heeft een lekkere <b>…</b>."},
+  {w:"scheur",e:"🩳",r:"beer",z:"Er zit een <b>…</b> in mijn broek."},
 
-  {w:"blauw",  e:"🟦", r:"pauw",   z:"De lucht is <b>…</b>."},
-  {w:"goud",   e:"🥇", r:"pauw",   z:"De schat is van <b>…</b>."},
-  {w:"hout",   e:"🪵", r:"pauw",   z:"De hut is van <b>…</b>."},
-  {w:"koud",   e:"🥶", r:"pauw",   z:"In de winter is het <b>…</b>."},
-  {w:"pauw",   e:"🦚", r:"pauw",   z:"De <b>…</b> heeft mooie veren."},
+  {w:"blauw",e:"🟦",r:"pauw",z:"De lucht is <b>…</b>."},
+  {w:"goud",e:"🥇",r:"pauw",z:"De schat is van <b>…</b>."},
+  {w:"hout",e:"🪵",r:"pauw",z:"De hut is van <b>…</b>."},
+  {w:"koud",e:"🥶",r:"pauw",z:"In de winter is het <b>…</b>."},
+  {w:"pauw",e:"🦚",r:"pauw",z:"De <b>…</b> heeft mooie veren."},
+  {w:"gauw",e:"⏩",r:"pauw",z:"Kom <b>…</b> hier!"},
+  {w:"nauw",e:"↔️",r:"pauw",z:"Het paadje is heel <b>…</b>."},
+  {w:"zout",e:"🧂",r:"pauw",z:"Er zit <b>…</b> op de friet."},
+  {w:"fout",e:"❌",r:"pauw",z:"Ik maakte een <b>…</b>."},
+  {w:"mouw",e:"👕",r:"pauw",z:"Mijn <b>…</b> is te lang."},
+  {w:"vrouw",e:"👩",r:"pauw",z:"De <b>…</b> loopt op straat."},
+  {w:"dauw",e:"💧",r:"pauw",z:"'s Ochtends ligt er <b>…</b> op het gras."},
 
-  {w:"bank",   e:"🛋️", r:"stinkdier", z:"Ik zit op de <b>…</b>."},
-  {w:"pink",   e:"🤙", r:"stinkdier", z:"Mijn kleinste vinger is de <b>…</b>."},
-  {w:"drinken",e:"🥤", r:"stinkdier", z:"Ik wil iets <b>…</b>."},
-  {w:"dank",   e:"🙏", r:"stinkdier", z:"<b>…</b> je wel!"},
-  {w:"plank",  e:"🪟", r:"stinkdier", z:"De boeken staan op de <b>…</b>."},
+  {w:"bank",e:"🛋️",r:"stinkdier",z:"Ik zit op de <b>…</b>."},
+  {w:"pink",e:"🤙",r:"stinkdier",z:"Mijn kleinste vinger is de <b>…</b>."},
+  {w:"dank",e:"🙏",r:"stinkdier",z:"<b>…</b> je wel!"},
+  {w:"plank",e:"🪵",r:"stinkdier",z:"De boeken staan op de <b>…</b>."},
+  {w:"drinken",e:"🥤",r:"stinkdier",z:"Ik wil iets <b>…</b>."},
+  {w:"denken",e:"💭",r:"stinkdier",z:"Ik moet goed <b>…</b>."},
+  {w:"klank",e:"🎵",r:"stinkdier",z:"De bel maakt een mooie <b>…</b>."},
+  {w:"tank",e:"⛽",r:"stinkdier",z:"De auto gaat naar de <b>…</b>."},
+  {w:"vink",e:"🐦",r:"stinkdier",z:"De <b>…</b> zingt een liedje."},
+  {w:"klinken",e:"🔔",r:"stinkdier",z:"De klokken <b>…</b>."},
+  {w:"zinken",e:"⚓",r:"stinkdier",z:"De steen gaat <b>…</b>."},
+  {w:"schenken",e:"🫖",r:"stinkdier",z:"Ik ga thee <b>…</b>."},
 ];
 
-/* =================== STATE (opslaan) =================== */
+/* =================== MOPPEN =================== */
+const MOPPEN = [
+  {v:"Wat is groen en springt door het bos?", a:"Een kikker op vakantie!"},
+  {v:"Welke vis kan niet zwemmen?", a:"Een bakvis!"},
+  {v:"Wat doet een koe midden in een aardbeving?", a:"Een milkshake!"},
+  {v:"Waarom is de computer bang voor de olifant?", a:"Nee hoor, de olifant is bang voor de muis!"},
+  {v:"Wat zei de ene muur tegen de andere muur?", a:"Zie ik je in de hoek?"},
+  {v:"Wat is oranje en klinkt als een papegaai?", a:"Een wortel!"},
+  {v:"Welke maand heeft 28 dagen?", a:"Alle maanden!"},
+  {v:"Wat krijg je als je een schaap in de regen zet?", a:"Een natte trui!"},
+  {v:"Waarom huilde het rekenboek?", a:"Het had zoveel problemen!"},
+  {v:"Wat doet een slak op een boot?", a:"Slak-varen!"},
+  {v:"Wat is bruin en plakt aan de muur?", a:"Een boterham met pindakaas die te hard gegooid is!"},
+  {v:"Waarom nam de banaan een jas mee?", a:"Omdat hij het koud had — hij was helemaal geschild!"},
+  {v:"Wat is wit en kan niet klimmen?", a:"Een koelkast!"},
+  {v:"Hoeveel appels groeien er aan een boom?", a:"Allemaal!"},
+];
+
+/* =================== STATE =================== */
 const SLEUTEL = "boaz-eiland-v1";
 let state = laadState();
 function standaardState(){
   return { munten:0, doelNaam:"IJsje", doelBedrag:500, goed:{}, fout:{}, wachtrij:[], samples:{}, herkGoed:0, herkTot:0, herkRecent:[] };
-}
-/* Houdt bij hoe vaak de app een goed geschreven letter meteen juist herkende. */
-function telHerkenning(goed, totaal){
-  state.herkGoed = (state.herkGoed||0) + goed;
-  state.herkTot  = (state.herkTot||0) + totaal;
-  state.herkRecent = state.herkRecent || [];
-  for(let i=0;i<totaal;i++) state.herkRecent.push(i<goed ? 1 : 0);
-  if(state.herkRecent.length > 40) state.herkRecent = state.herkRecent.slice(-40);
 }
 function laadState(){
   try{ const s = JSON.parse(localStorage.getItem(SLEUTEL)); return Object.assign(standaardState(), s||{}); }
@@ -285,8 +393,14 @@ function laadState(){
 }
 function bewaar(){ try{ localStorage.setItem(SLEUTEL, JSON.stringify(state)); }catch(e){} }
 function niveauVan(id){ const g = state.goed[id]||0; return g<=0 ? 0 : Math.min(5, Math.ceil(g/2)); }
+function telHerkenning(goed, totaal){
+  state.herkGoed=(state.herkGoed||0)+goed; state.herkTot=(state.herkTot||0)+totaal;
+  state.herkRecent=state.herkRecent||[];
+  for(let i=0;i<totaal;i++) state.herkRecent.push(i<goed?1:0);
+  if(state.herkRecent.length>40) state.herkRecent=state.herkRecent.slice(-40);
+}
 
-/* =================== STEM (voorlezen) =================== */
+/* =================== STEM =================== */
 let stemmen = [];
 function laadStemmen(){ try{ stemmen = window.speechSynthesis ? speechSynthesis.getVoices() : []; }catch(e){ stemmen=[]; } toonStemStatus(); }
 function kiesStem(){
@@ -308,18 +422,18 @@ function ontgrendelSpraak(){
   laadStemmen();
 }
 document.addEventListener("pointerdown", ontgrendelSpraak, {once:true});
-function spreek(tekst){
-  if(!window.speechSynthesis){ toonDoelwoord(); return; }
+function spreek(tekst, bijFout){
+  if(!window.speechSynthesis){ if(bijFout) bijFout(); return; }
   try{
     speechSynthesis.cancel();
     if(!stemmen.length) laadStemmen();
     const u = new SpeechSynthesisUtterance(tekst);
     u.lang="nl-NL"; u.rate=.6; u.pitch=1;
     const stem = kiesStem(); if(stem) u.voice = stem;
-    u.onerror = ()=> toonDoelwoord();
+    if(bijFout) u.onerror = bijFout;
     speechSynthesis.speak(u);
     setTimeout(()=>{ try{ speechSynthesis.resume(); }catch(e){} }, 120);
-  }catch(e){ toonDoelwoord(); }
+  }catch(e){ if(bijFout) bijFout(); }
 }
 function toonDoelwoord(){ document.getElementById("doelwoord").textContent = ronde[huidig].w; }
 
@@ -359,17 +473,15 @@ function herken(canvas){
   const v=kenmerken(canvas); if(!v) return null;
   let best=null,bd=1e18;
   for(const t of templates){ const d=afstand(v,t.v); if(d<bd){bd=d; best=t.ch;} }
-  for(const t of geleerdeTemplates()){ const d=afstand(v,t.v)*0.55; if(d<bd){bd=d; best=t.ch;} } // Boaz' eigen handschrift telt zwaarder
+  for(const t of geleerdeTemplates()){ const d=afstand(v,t.v)*0.55; if(d<bd){bd=d; best=t.ch;} }
   return best;
 }
-/* --- Leert mee: onthoudt hoe Boaz zijn letters schrijft --- */
 function leerLetter(letter, canvas){
   const v=kenmerken(canvas); if(!v) return;
   let str=""; for(let i=0;i<784;i++) str += v[i]>0.35 ? "1" : "0";
   state.samples = state.samples || {};
   const arr = state.samples[letter] = state.samples[letter] || [];
-  arr.push(str);
-  if(arr.length>8) arr.shift();          // hou de 8 recentste voorbeelden per letter
+  arr.push(str); if(arr.length>8) arr.shift();
 }
 function leerAlles(vakken){ vakken.forEach(v=> leerLetter(v.dataset.letter, v._canvas)); }
 function geleerdeTemplates(){
@@ -417,23 +529,18 @@ function palm(x,y,s){
     </g></g>`;
 }
 function tekenDieren(){
-  const laag = document.getElementById("dierenOpEiland");
-  laag.innerHTML = "";
+  const laag = document.getElementById("dierenOpEiland"); laag.innerHTML = "";
   RULES.forEach(r=>{
-    const n = niveauVan(r.id);
-    if(n<=0) return;
+    const n = niveauVan(r.id); if(n<=0) return;
     const [px,py] = PLEK[r.id] || [50,75];
     const sp = document.createElement("span");
-    sp.textContent = r.emoji;
-    sp.style.left = px+"%"; sp.style.top = py+"%";
-    sp.style.fontSize = (26 + n*7) + "px";
-    sp.title = r.naam + " · niveau " + n;
+    sp.textContent = r.emoji; sp.style.left = px+"%"; sp.style.top = py+"%";
+    sp.style.fontSize = (26 + n*7) + "px"; sp.title = r.naam + " · niveau " + n;
     laag.appendChild(sp);
   });
 }
 function tekenVerzameling(){
-  const g = document.getElementById("verzamelGrid");
-  g.innerHTML = "";
+  const g = document.getElementById("verzamelGrid"); g.innerHTML = "";
   const gered = RULES.filter(r=> niveauVan(r.id)>0).length;
   document.getElementById("verzamelTitel").innerHTML =
     `Jouw dieren — <span class="telling">${gered} van ${RULES.length} gered</span> 🏝️`;
@@ -443,14 +550,16 @@ function tekenVerzameling(){
     if(n>0){
       div.className = "tegel gered";
       div.innerHTML = `<div class="kop"><span class="em">${r.emoji}</span> ${r.naam} <span class="badge-gered">Gered!</span></div>
-        <div class="uitleg">${r.uitleg}</div>
-        <div class="sterren">${"★".repeat(n)}${"☆".repeat(5-n)}</div>`;
+        <div class="uitleg">${r.uitleg}</div><div class="sterren">${"★".repeat(n)}${"☆".repeat(5-n)}</div>`;
     } else {
       div.className = "tegel nietgered";
       div.innerHTML = `<div class="kop"><span class="em dim">${r.emoji}</span> ${r.naam}</div>
-        <div class="uitleg">Nog te redden — oefen de ${r.naam.toLowerCase()}-woorden</div>
-        <div class="sterren">☆☆☆☆☆</div>`;
+        <div class="uitleg">Nog te redden — oefen de ${r.naam.toLowerCase()}-woorden</div><div class="sterren">☆☆☆☆☆</div>`;
     }
+    const vr = document.createElement("button");
+    vr.className = "vraagknop"; vr.textContent = "?"; vr.title = "Uitleg";
+    vr.onclick = ()=> openUitleg(r.id);
+    div.appendChild(vr);
     g.appendChild(div);
   });
 }
@@ -458,20 +567,49 @@ function ververHome(){
   document.getElementById("muntHome").textContent = state.munten;
   document.getElementById("doelNaam").textContent = "🎁 " + state.doelNaam;
   document.getElementById("doelCijfers").textContent = state.munten + " / " + state.doelBedrag;
-  const pct = Math.min(100, Math.round(state.munten/state.doelBedrag*100));
-  document.getElementById("doelVul").style.width = pct + "%";
+  document.getElementById("doelVul").style.width = Math.min(100, Math.round(state.munten/state.doelBedrag*100)) + "%";
   tekenDieren(); tekenVerzameling();
+}
+
+/* =================== INFO-OVERLAY (mop + uitleg) =================== */
+function openInfo(em, titel, body, knoppen){
+  document.getElementById("infoEm").textContent = em;
+  document.getElementById("infoTitel").textContent = titel;
+  document.getElementById("infoBody").innerHTML = body;
+  const kn = document.getElementById("infoKnoppen"); kn.innerHTML = "";
+  knoppen.forEach(k=>{ const b=document.createElement("button"); b.className="knop "+(k.stijl||"grijs"); b.textContent=k.tekst; b.onclick=k.actie; kn.appendChild(b); });
+  document.getElementById("info").classList.add("actief");
+}
+function sluitInfo(){ document.getElementById("info").classList.remove("actief"); }
+function openUitleg(id){
+  const r = RULE[id];
+  openInfo(r.emoji, r.naam + "-regel", r.kind + `<span class="vb">Voorbeeld: ${r.voorbeeld}</span>`,
+    [{tekst:"🔊 Nog eens", actie:()=> spreek(r.kind + ". Bijvoorbeeld: " + r.voorbeeld)}, {tekst:"Sluiten", stijl:"groen", actie:sluitInfo}]);
+  spreek(r.kind + ". Bijvoorbeeld: " + r.voorbeeld);
+}
+let mopIndex = 0;
+function openMop(){
+  ontgrendelSpraak();
+  mopIndex = Math.floor(Math.random()*MOPPEN.length);
+  const m = MOPPEN[mopIndex];
+  openInfo("😄", "Een mopje!", m.v,
+    [{tekst:"Antwoord! 🥁", stijl:"primair", actie:toonMopAntwoord}, {tekst:"Sluiten", actie:sluitInfo}]);
+  spreek(m.v);
+}
+function toonMopAntwoord(){
+  const m = MOPPEN[mopIndex];
+  openInfo("🤣", "Een mopje!", m.v + `<span class="vb">${m.a}</span>`,
+    [{tekst:"Nog een mop! 😆", stijl:"primair", actie:openMop}, {tekst:"Sluiten", stijl:"groen", actie:sluitInfo}]);
+  spreek(m.a);
 }
 
 /* =================== RONDE =================== */
 let ronde = [], huidig = 0, rondeMunten = 0, geleerd = {};
-
 function kiesRonde(){
   const lijst = [];
-  const wachters = (state.wachtrij||[]).slice(0,2);           // eerst 2 fout-woorden terug
-  wachters.forEach(w=>{ const item = WOORDEN.find(x=>x.w===w); if(item) lijst.push(item); });
+  (state.wachtrij||[]).slice(0,2).forEach(w=>{ const item = WOORDEN.find(x=>x.w===w); if(item) lijst.push(item); });
   const pool = [];
-  WOORDEN.forEach(it=>{ const gewicht = RULE[it.r].zwaar ? 3 : 1; for(let i=0;i<gewicht;i++) pool.push(it); });
+  WOORDEN.forEach(it=>{ const g = RULE[it.r].zwaar ? 3 : 1; for(let i=0;i<g;i++) pool.push(it); });
   while(lijst.length < 5){
     const kand = pool[Math.floor(Math.random()*pool.length)];
     if(!lijst.includes(kand)) lijst.push(kand);
@@ -487,18 +625,18 @@ function startRonde(){
 function toonWoord(){
   const item = ronde[huidig];
   document.getElementById("voortgang").textContent = "Woord " + (huidig+1) + " / " + ronde.length;
-  document.getElementById("zin").innerHTML = item.z;
+  document.getElementById("zin").innerHTML = item.z || "🔊 Luister en schrijf het woord.";
   document.getElementById("emoji").textContent = item.e || "";
   document.getElementById("doelwoord").textContent = "";
   const hint = document.getElementById("hint");
-  hint.style.display="none"; hint.textContent = "💡 " + RULE[item.r].naam + "-regel: " + RULE[item.r].uitleg;
+  hint.style.display="none"; hint.textContent = "💡 " + RULE[item.r].naam + "-regel: " + RULE[item.r].kind;
   document.getElementById("uitslag").textContent=""; document.getElementById("uitslag").className="uitslag";
   document.getElementById("fix").style.display="none";
   document.getElementById("volgende").style.display="none";
   document.getElementById("nakijken").style.display="";
   const h = document.getElementById("vakjes"); h.innerHTML="";
   item.w.split("").forEach((l,i)=> h.appendChild(maakVak(l,i)));
-  setTimeout(()=> spreek(item.w), 400);
+  setTimeout(()=> spreek(item.w, toonDoelwoord), 400);
 }
 function maakVak(letter,i){
   const vak=document.createElement("div"); vak.className="vak"; vak.dataset.letter=letter;
@@ -539,7 +677,7 @@ function nakijken(){
   });
   const uit=document.getElementById("uitslag");
   if(geschreven < item.w.length){ uit.textContent="Schrijf eerst alle letters ✍️"; uit.className="uitslag bijna"; return; }
-  if(twijfel.length===0){ telHerkenning(vakken.length, vakken.length); leerAlles(vakken); goedGedaan(10); }   // helemaal goed → van elke letter leren
+  if(twijfel.length===0){ telHerkenning(vakken.length, vakken.length); leerAlles(vakken); goedGedaan(10); }
   else{
     uit.textContent="Bijna! Kijk naar de gekleurde letters."; uit.className="uitslag bijna";
     document.getElementById("hint").style.display="block";
@@ -551,16 +689,15 @@ function toonFix(vakken, twijfel){
   kn.innerHTML=""; fix.style.display="block";
   const ja=document.createElement("button"); ja.className="ja"; ja.textContent="Boaz had 't tóch goed ✓";
   const nee=document.createElement("button"); nee.className="nee"; nee.textContent="Echt fout ✎";
-  ja.onclick=()=>{ telHerkenning(vakken.length - twijfel.length, vakken.length); leerAlles(vakken); twijfel.forEach(v=>{ v.className="vak goed"; v._badge.textContent="✓"; }); fix.style.display="none"; goedGedaan(6); }; // juist deze letters zijn goud om van te leren
+  ja.onclick=()=>{ telHerkenning(vakken.length - twijfel.length, vakken.length); leerAlles(vakken); twijfel.forEach(v=>{ v.className="vak goed"; v._badge.textContent="✓"; }); fix.style.display="none"; goedGedaan(6); };
   nee.onclick=()=>{ fix.style.display="none"; foutGedaan(); };
   kn.append(ja,nee);
 }
 function goedGedaan(munten){
   const item=ronde[huidig];
   state.munten += munten; rondeMunten += munten;
-  state.goed[item.r] = (state.goed[item.r]||0) + 1;
-  geleerd[item.r] = true;
-  state.wachtrij = (state.wachtrij||[]).filter(w=>w!==item.w);   // uit wachtrij halen
+  state.goed[item.r] = (state.goed[item.r]||0) + 1; geleerd[item.r] = true;
+  state.wachtrij = (state.wachtrij||[]).filter(w=>w!==item.w);
   bewaar();
   document.getElementById("muntSpel").textContent = state.munten;
   const uit=document.getElementById("uitslag"); uit.textContent="Goed gedaan! 🎉 +"+munten+" munten"; uit.className="uitslag goed";
@@ -572,35 +709,68 @@ function foutGedaan(){
   if(!(state.wachtrij||[]).includes(item.w)){ state.wachtrij = state.wachtrij||[]; state.wachtrij.push(item.w); }
   bewaar();
   const uit=document.getElementById("uitslag"); uit.textContent="Geeft niks — dit woord oefenen we later nog eens 💪"; uit.className="uitslag bijna";
-  spreek(item.w);
-  klaarMetWoord();
+  spreek(item.w); klaarMetWoord();
 }
 function klaarMetWoord(){
   document.getElementById("nakijken").style.display="none";
   document.getElementById("volgende").style.display="";
   document.getElementById("volgende").textContent = (huidig < ronde.length-1) ? "Volgende →" : "Klaar! 🎉";
 }
-function volgendeWoord(){
-  if(huidig < ronde.length-1){ huidig++; toonWoord(); }
-  else toonKlaar();
-}
+function volgendeWoord(){ if(huidig < ronde.length-1){ huidig++; toonWoord(); } else toonKlaar(); }
 function toonKlaar(){
   document.getElementById("rondeMunten").textContent = rondeMunten;
   const blok=document.getElementById("nieuwBlok"); blok.innerHTML="";
-  const geleerdeRules = Object.keys(geleerd);
-  if(geleerdeRules.length){
-    const t=document.createElement("div"); t.style.fontWeight="800"; t.style.marginBottom="6px"; t.textContent="Dieren geholpen:";
-    blok.appendChild(t);
-    geleerdeRules.forEach(id=>{
-      const r=RULE[id], rij=document.createElement("div"); rij.className="regel";
-      rij.innerHTML = `<span style="font-size:26px">${r.emoji}</span> ${r.naam} — niveau ${niveauVan(id)} ${"★".repeat(niveauVan(id))}`;
-      blok.appendChild(rij);
-    });
+  const ids = Object.keys(geleerd);
+  if(ids.length){
+    const t=document.createElement("div"); t.style.fontWeight="800"; t.style.marginBottom="6px"; t.textContent="Dieren geholpen:"; blok.appendChild(t);
+    ids.forEach(id=>{ const r=RULE[id], rij=document.createElement("div"); rij.className="regel";
+      rij.innerHTML=`<span style="font-size:26px">${r.emoji}</span> ${r.naam} — niveau ${niveauVan(id)} ${"★".repeat(niveauVan(id))}`; blok.appendChild(rij); });
   } else { blok.innerHTML = "<div class='regel'>Volgende keer meer dieren redden! 🌴</div>"; }
+  resetRad();
   toon("klaar");
 }
 
-/* =================== OUDER =================== */
+/* =================== GELUKRAD =================== */
+const SEG = [
+  {munt:10,kleur:"#FF7A3C"},{munt:5,kleur:"#1D9E75"},{munt:20,kleur:"#185FA5"},{munt:10,kleur:"#E5A400"},
+  {munt:15,kleur:"#D4537E"},{munt:5,kleur:"#46B0D8"},{munt:25,kleur:"#7F77DD"},{munt:10,kleur:"#2FA05A"}
+];
+let radGedraaid = false;
+function bouwRad(){
+  const rad = document.getElementById("rad");
+  const stops = SEG.map((s,i)=> `${s.kleur} ${i*45}deg ${(i+1)*45}deg`).join(",");
+  rad.style.background = `conic-gradient(${stops})`;
+  rad.querySelectorAll(".lbl").forEach(l=>l.remove());
+  SEG.forEach((s,i)=>{
+    const a = i*45 + 22.5;
+    const lbl = document.createElement("span"); lbl.className="lbl"; lbl.textContent = s.munt;
+    lbl.style.transform = `translate(-50%,-50%) rotate(${a}deg) translateY(-82px) rotate(${-a}deg)`;
+    rad.appendChild(lbl);
+  });
+}
+function resetRad(){
+  const rad = document.getElementById("rad");
+  rad.style.transition="none"; rad.style.transform="rotate(0deg)"; rad.offsetHeight;
+  rad.style.transition="transform 3.4s cubic-bezier(.15,.85,.25,1)";
+  radGedraaid=false;
+  document.getElementById("draai").disabled=false;
+  document.getElementById("radUitslag").textContent=""; document.getElementById("radUitslag").className="uitslag";
+}
+function draaiRad(){
+  if(radGedraaid) return; radGedraaid=true;
+  document.getElementById("draai").disabled=true;
+  const i = Math.floor(Math.random()*SEG.length);
+  const finale = 360*5 - (i*45 + 22.5);
+  document.getElementById("rad").style.transform = `rotate(${finale}deg)`;
+  setTimeout(()=>{
+    const bonus = SEG[i].munt;
+    state.munten += bonus; rondeMunten += bonus; bewaar();
+    document.getElementById("rondeMunten").textContent = rondeMunten;
+    const u=document.getElementById("radUitslag"); u.textContent = "🎉 Bonus: +"+bonus+" munten!"; u.className="uitslag goed";
+  }, 3500);
+}
+
+/* =================== OUDER + BACK-UP =================== */
 function openOuder(){
   document.getElementById("inNaam").value = state.doelNaam;
   document.getElementById("inBedrag").value = state.doelBedrag;
@@ -616,7 +786,7 @@ function openOuder(){
   document.getElementById("herkInfo").textContent = totaalPct===null
     ? "🎯 Herkenning: nog geen letters gemeten — speel een rondje."
     : "🎯 Herkenning: totaal " + totaalPct + "% (" + state.herkTot + " letters) · laatste " + rec.length + ": " + recPct + "%";
-  document.getElementById("leerInfo").textContent = "✍️ Handschrift geleerd: " + aantalSamples() + " voorbeelden — hoe meer Boaz speelt, hoe beter de herkenning wordt.";
+  document.getElementById("leerInfo").textContent = "✍️ Handschrift geleerd: " + aantalSamples() + " voorbeelden.";
   toonStemStatus();
   document.getElementById("ouder").classList.add("actief");
 }
@@ -628,31 +798,73 @@ function slaOuderOp(){
   bewaar(); ververHome();
   document.getElementById("ouder").classList.remove("actief");
 }
+function maakCode(){ return btoa(unescape(encodeURIComponent(JSON.stringify(state)))); }
+function downloadBackup(){
+  const blob = new Blob([JSON.stringify(state)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="boaz-eiland-backup.json"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+function kopieerCode(){
+  const code=maakCode(); const t=document.getElementById("codeVeld"); t.value=code; t.focus(); t.select();
+  const klaar=()=> alert("Code gekopieerd! Bewaar 'm goed (bijv. in een notitie of e-mail aan jezelf).");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(klaar).catch(()=>{ try{document.execCommand("copy"); klaar();}catch(e){ alert("Selecteer de code en kopieer 'm handmatig."); } });
+  } else { try{document.execCommand("copy"); klaar();}catch(e){ alert("Selecteer de code en kopieer 'm handmatig."); } }
+}
+function importData(str){
+  try{
+    str = (str||"").trim(); if(!str) return alert("Geen back-up gevonden.");
+    let parsed = str[0]==="{" ? JSON.parse(str) : JSON.parse(decodeURIComponent(escape(atob(str))));
+    if(!parsed || typeof parsed!=="object") throw 0;
+    state = Object.assign(standaardState(), parsed);
+    bewaar(); ververHome();
+    document.getElementById("ouder").classList.remove("actief");
+    alert("Hersteld! Munten en handschrift zijn terug. 🎉");
+  }catch(e){ alert("Kon de back-up niet lezen. Controleer het bestand of de code."); }
+}
 
 /* =================== KNOPPEN =================== */
 document.getElementById("speel").onclick = startRonde;
 document.getElementById("stop").onclick = ()=>{ toon("home"); ververHome(); };
 document.getElementById("terug").onclick = ()=>{ toon("home"); ververHome(); };
-document.getElementById("luister").onclick = ()=>{ ontgrendelSpraak(); spreek(ronde[huidig].w); };
-document.getElementById("toon").onclick = toonDoelwoord;
+document.getElementById("luister").onclick = ()=>{ ontgrendelSpraak(); spreek(ronde[huidig].w, toonDoelwoord); };
 document.getElementById("wisAlles").onclick = toonWoord;
 document.getElementById("nakijken").onclick = nakijken;
 document.getElementById("volgende").onclick = volgendeWoord;
+document.getElementById("draai").onclick = draaiRad;
 document.getElementById("gear").onclick = openOuder;
 document.getElementById("sluit").onclick = ()=> document.getElementById("ouder").classList.remove("actief");
 document.getElementById("opslaan").onclick = slaOuderOp;
+document.getElementById("mopKnop").onclick = openMop;
+document.getElementById("dlBackup").onclick = downloadBackup;
+document.getElementById("kopieerCode").onclick = kopieerCode;
+document.getElementById("herstelCode").onclick = ()=> importData(document.getElementById("codeVeld").value);
+document.getElementById("herstelBestand").onchange = (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ()=> importData(String(r.result)); r.readAsText(f);
+};
 document.getElementById("wisVoortgang").onclick = ()=>{
   if(confirm("Weet je zeker dat je alle munten en dieren wilt wissen?")){ state=standaardState(); bewaar(); ververHome(); document.getElementById("ouder").classList.remove("actief"); }
 };
+document.getElementById("info").addEventListener("click",(e)=>{ if(e.target.id==="info") sluitInfo(); });
+document.getElementById("ouder").addEventListener("click",(e)=>{ if(e.target.id==="ouder") e.currentTarget.classList.remove("actief"); });
 
 /* =================== OFFLINE (PWA) =================== */
-if("serviceWorker" in navigator){
-  window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{}));
+if("serviceWorker" in navigator){ window.addEventListener("load", ()=> navigator.serviceWorker.register("sw.js").catch(()=>{})); }
+
+function tekenSpelBg(){
+  const bg = document.querySelector(".spelbg");
+  bg.insertAdjacentHTML("beforeend",
+    `<svg width="170" height="150" viewBox="0 0 170 150" style="left:-8px">${palm(70,150,.85)}</svg>
+     <svg width="170" height="150" viewBox="0 0 170 150" style="right:-8px">${palm(100,150,.85)}</svg>`);
 }
 
 /* =================== START =================== */
 bouwTemplates();
+bouwRad();
 tekenEiland();
+tekenSpelBg();
 ververHome();
 </script>
 </body>

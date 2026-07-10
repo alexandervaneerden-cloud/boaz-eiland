@@ -1,5 +1,5 @@
 /* Service worker — maakt Boaz' Eiland offline speelbaar (ook op vakantie zonder internet). */
-const CACHE = "meisje-eiland-v1";
+const CACHE = "meisje-eiland-v2";
 const BESTANDEN = [
   "./",
   "./index.html",

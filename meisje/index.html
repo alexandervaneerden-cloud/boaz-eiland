@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Boaz' Eiland</title>
+<title>Zeemeermin-eiland</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#46B0D8">
+<meta name="theme-color" content="#FF5DA2">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --zand:#F6E7B8; --zand-donker:#E9D189; --zee:#46B0D8; --zee-licht:#BFE8F5;
-    --palm:#2FA05A; --palm-donker:#1F7A44; --oranje:#FF7A3C; --blauw:#185FA5;
-    --groen:#1D9E75; --rood:#E24B4A; --ink:#173a5e; --goud:#E5A400;
+    --zand:#FAD4E7; --zand-donker:#F0AFD3; --zee:#5AD3D8; --zee-licht:#FDE7F3;
+    --palm:#E86FB0; --palm-donker:#B14C97; --oranje:#FF5DA2; --blauw:#8E5AC8;
+    --groen:#16B39A; --rood:#E24B4A; --ink:#5B2A6B; --goud:#E5A400;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none;}
   html,body{margin:0; padding:0;}
@@ -29,9 +29,9 @@
   .hud{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
   .munt{background:#fff; border-radius:999px; padding:8px 16px; font-weight:800; color:var(--blauw); font-size:18px; box-shadow:0 2px 0 rgba(0,0,0,.06);}
   .doel{background:#fff; border-radius:16px; padding:8px 14px; box-shadow:0 2px 0 rgba(0,0,0,.06); flex:1; max-width:320px;}
-  .doel .rij{display:flex; justify-content:space-between; font-size:13px; font-weight:800; color:#993C1D;}
-  .doel .balk{height:9px; border-radius:999px; background:#F0D9C9; margin-top:5px; overflow:hidden;}
-  .doel .vul{height:100%; background:#D85A30;}
+  .doel .rij{display:flex; justify-content:space-between; font-size:13px; font-weight:800; color:#B14C97;}
+  .doel .balk{height:9px; border-radius:999px; background:#FAD4E7; margin-top:5px; overflow:hidden;}
+  .doel .vul{height:100%; background:#FF5DA2;}
   .gear{background:#fff; border:none; border-radius:50%; width:44px; height:44px; font-size:20px; box-shadow:0 2px 0 rgba(0,0,0,.06); cursor:pointer;}
   .eiland{position:relative; border-radius:22px; overflow:hidden; box-shadow:0 4px 0 rgba(0,0,0,.06);}
   .titel{position:absolute; top:12px; left:0; right:0; text-align:center; font-size:24px; font-weight:800; color:var(--palm-donker); text-shadow:0 1px 0 #fff;}
@@ -58,8 +58,8 @@
   /* ---- SPEL ---- */
   #spel{position:relative; min-height:100vh;}
   .spelbg{position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
-    background:linear-gradient(180deg,#BFE8F5 0%,#CDEBF4 40%,#E7EFCB 52%,#F6E7B8 100%);}
-  .spelbg .zon{position:absolute; top:18px; right:26px; width:66px; height:66px; border-radius:50%; background:#FFD24A; opacity:.85;}
+    background:linear-gradient(180deg,#FDE7F3 0%,#FBD9EF 40%,#F7D9E9 52%,#FAD4E7 100%);}
+  .spelbg .zon{position:absolute; top:18px; right:26px; width:66px; height:66px; border-radius:50%; background:#FF9EC7; opacity:.85;}
   .spelbg svg{position:absolute; bottom:-8px; opacity:.7;}
   #spel > .spelkop, #spel > .kaart, #spel > .vakjes, #spel > .knoppen, #spel > .uitslag, #spel > .fix{position:relative; z-index:1;}
   .spelkop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
@@ -71,7 +71,7 @@
   .emoji{font-size:44px; line-height:1;}
   .zin{font-size:18px; color:#5b6470;}
   .zin b{color:var(--palm-donker);}
-  .hint{margin-top:12px; background:#EAF3DE; border-radius:14px; padding:10px 14px; font-size:15px; color:#27500A; line-height:1.5; display:none;}
+  .hint{margin-top:12px; background:#F7E3F3; border-radius:14px; padding:10px 14px; font-size:15px; color:#8E3E86; line-height:1.5; display:none;}
   .doelwoord{text-align:center; font-size:26px; font-weight:800; letter-spacing:6px; color:var(--zand-donker); min-height:16px; margin-top:6px;}
   .vakjes{display:flex; gap:8px; flex-wrap:nowrap; justify-content:center; width:100%; margin:0 auto 14px;}
   .vak{background:#fff; border:3px dashed var(--zand-donker); border-radius:18px; flex:1 1 0; min-width:0; max-width:150px; aspect-ratio:4/5; position:relative; touch-action:none;}
@@ -138,7 +138,7 @@
   </div>
 
   <div class="eiland">
-    <div class="titel">Boaz' Eiland 🌴</div>
+    <div class="titel">Zeemeermin-eiland 🧜‍♀️</div>
     <svg viewBox="0 0 1000 340" width="100%" style="display:block" id="eilandSvg" aria-hidden="true"></svg>
     <div class="dieren-op-eiland" id="dierenOpEiland"></div>
     <div class="speelknop">
@@ -223,7 +223,7 @@
       <button class="miniknop" id="dlBackup">📄 Download back-up</button>
       <button class="miniknop" id="kopieerCode">📋 Kopieer code</button>
       <label for="herstelBestand">Herstel uit bestand</label>
-      <div style="font-size:12px; color:#8a8f96; margin-bottom:4px">Kies het bestand <b>boaz-eiland-backup.json</b> (meestal in de map Downloads).</div>
+      <div style="font-size:12px; color:#8a8f96; margin-bottom:4px">Kies het bestand <b>zeemeermin-eiland-backup.json</b> (meestal in de map Downloads).</div>
       <input id="herstelBestand" type="file">
       <label for="codeVeld">Of plak hier een back-up code</label>
       <textarea id="codeVeld" rows="3" placeholder="Plak hier je back-up code…"></textarea>
@@ -473,7 +473,7 @@ const MOPPEN = [
 ];
 
 /* =================== STATE =================== */
-const SLEUTEL = "boaz-eiland-v1";
+const SLEUTEL = "meisje-eiland-v1";
 let state = laadState();
 function standaardState(){
   return { munten:0, doelNaam:"IJsje", doelBedrag:500, goed:{}, fout:{}, wachtrij:[], samples:{}, herkGoed:0, herkTot:0, herkRecent:[] };
@@ -597,15 +597,15 @@ function toon(id){
 function tekenEiland(){
   const svg = document.getElementById("eilandSvg");
   svg.innerHTML = `
-    <rect x="0" y="0" width="1000" height="340" fill="#BFE8F5"/>
-    <circle cx="900" cy="56" r="34" fill="#FFD24A"/>
+    <rect x="0" y="0" width="1000" height="340" fill="#FDE7F3"/>
+    <circle cx="900" cy="56" r="34" fill="#FF9EC7"/>
     <ellipse cx="180" cy="60" rx="60" ry="20" fill="#fff" opacity=".9"/>
     <ellipse cx="240" cy="52" rx="44" ry="18" fill="#fff" opacity=".9"/>
-    <rect x="0" y="200" width="1000" height="140" fill="#46B0D8"/>
-    <rect x="0" y="200" width="1000" height="16" fill="#6FC6E4"/>
-    <ellipse cx="500" cy="305" rx="460" ry="82" fill="#EFD597"/>
-    <ellipse cx="500" cy="296" rx="460" ry="66" fill="#F6E7B8"/>
-    ${palm(180,300,1)} ${palm(760,296,.9)} ${palm(880,306,.8)}`;
+    <rect x="0" y="200" width="1000" height="140" fill="#5AD3D8"/>
+    <rect x="0" y="200" width="1000" height="16" fill="#9DE7EA"/>
+    <ellipse cx="500" cy="305" rx="460" ry="82" fill="#F3BCDC"/>
+    <ellipse cx="500" cy="296" rx="460" ry="66" fill="#FAD4E7"/>
+    ${palm(180,300,1)} ${palm(760,296,.9)} ${palm(880,306,.8)} ${bloem(340,322,1)} ${bloem(620,328,1.1)} ${bloem(470,334,.9)}`;
 }
 function palm(x,y,s){
   return `<g transform="translate(${x},${y}) scale(${s})">
@@ -618,6 +618,10 @@ function palm(x,y,s){
       <ellipse cx="42" cy="0" rx="46" ry="13" fill="#2FA05A" transform="rotate(-20)"/>
       <circle cx="0" cy="-2" r="6" fill="#7A4A24"/><circle cx="9" cy="3" r="6" fill="#7A4A24"/>
     </g></g>`;
+}
+function bloem(x,y,s){
+  var p=""; for(var i=0;i<5;i++){ var a=i*72*Math.PI/180; p+='<circle cx="'+(x+Math.cos(a)*11*s)+'" cy="'+(y+Math.sin(a)*11*s)+'" r="'+(9*s)+'" fill="#FF8FC4"/>'; }
+  return '<g>'+p+'<circle cx="'+x+'" cy="'+y+'" r="'+(7*s)+'" fill="#FFE08A"/></g>';
 }
 function tekenDieren(){
   const laag = document.getElementById("dierenOpEiland"); laag.innerHTML = "";
@@ -824,7 +828,7 @@ function toonKlaar(){
 /* =================== GELUKRAD =================== */
 const SEG = [
   {munt:10,kleur:"#FF7A3C"},{munt:5,kleur:"#1D9E75"},{munt:20,kleur:"#185FA5"},{munt:10,kleur:"#E5A400"},
-  {munt:15,kleur:"#D4537E"},{munt:5,kleur:"#46B0D8"},{munt:25,kleur:"#7F77DD"},{munt:10,kleur:"#2FA05A"}
+  {munt:15,kleur:"#D4537E"},{munt:5,kleur:"#5AD3D8"},{munt:25,kleur:"#7F77DD"},{munt:10,kleur:"#2FA05A"}
 ];
 let radGedraaid = false;
 function bouwRad(){
@@ -893,7 +897,7 @@ function maakCode(){ return btoa(unescape(encodeURIComponent(JSON.stringify(stat
 function downloadBackup(){
   const blob = new Blob([JSON.stringify(state)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
-  const a=document.createElement("a"); a.href=url; a.download="boaz-eiland-backup.json"; document.body.appendChild(a); a.click(); a.remove();
+  const a=document.createElement("a"); a.href=url; a.download="zeemeermin-eiland-backup.json"; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 1500);
 }
 function kopieerCode(){

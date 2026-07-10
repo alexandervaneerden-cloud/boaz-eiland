@@ -1,5 +1,5 @@
 /* Service worker — maakt Boaz' Eiland offline speelbaar (ook op vakantie zonder internet). */
-const CACHE = "boaz-eiland-v7";
+const CACHE = "meisje-eiland-v1";
 const BESTANDEN = [
   "./",
   "./index.html",
@@ -14,7 +14,7 @@ self.addEventListener("install", e=>{
 
 self.addEventListener("activate", e=>{
   e.waitUntil(
-    caches.keys().then(keys=> Promise.all(keys.filter(k=> k.startsWith("boaz-eiland-") && k!==CACHE).map(k=> caches.delete(k))))
+    caches.keys().then(keys=> Promise.all(keys.filter(k=> k.startsWith("meisje-eiland-") && k!==CACHE).map(k=> caches.delete(k))))
       .then(()=> self.clients.claim())
   );
 });

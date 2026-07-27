@@ -256,6 +256,12 @@
       <button class="miniknop" id="resetMunten">🪙 Zet munten op 0</button>
     </div>
 
+    <div class="sectie">
+      <h3>🐾 Dieren</h3>
+      <div style="font-size:13px; color:#8a8f96; margin-bottom:8px">Zet alle dieren terug naar niveau 0. Boaz kan ze dan opnieuw redden — met ballonnen bij elk nieuw niveau! Munten en handschrift blijven bewaard.</div>
+      <button class="miniknop" id="resetDieren">🐾 Zet dieren op niveau 0</button>
+    </div>
+
     <div style="text-align:center; margin-top:12px;">
       <button style="background:none; border:none; color:#c0392b; font-size:13px; text-decoration:underline; cursor:pointer" id="wisVoortgang">Alle voortgang wissen</button>
     </div>
@@ -1058,6 +1064,9 @@ document.getElementById("herstelBestand").onchange = (e)=>{
 };
 document.getElementById("resetMunten").onclick = ()=>{
   if(confirm("Munten terug naar 0? De geredde dieren blijven staan.")){ state.munten=0; bewaar(); ververHome(); alert("De munten staan weer op 0. 🪙"); }
+};
+document.getElementById("resetDieren").onclick = ()=>{
+  if(confirm("Alle dieren terug naar niveau 0? Boaz kan ze dan opnieuw redden (met ballonnen!). Munten en handschrift blijven staan.")){ state.goed={}; state.wachtrij=[]; bewaar(); ververHome(); alert("De dieren staan weer op niveau 0. Speel maar om ze opnieuw te redden! 🎈"); }
 };
 document.getElementById("wisVoortgang").onclick = ()=>{
   if(confirm("Weet je zeker dat je alle munten en dieren wilt wissen?")){ state=standaardState(); bewaar(); ververHome(); document.getElementById("ouder").classList.remove("actief"); }
